@@ -51,6 +51,10 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Enumerated(STRING)
+    @Column(name = "status", nullable = false)
+    private UserStatus status;
+
     @Column(name = "balance", nullable = false, precision = 7, scale = 2)
     private BigDecimal balance;
 
