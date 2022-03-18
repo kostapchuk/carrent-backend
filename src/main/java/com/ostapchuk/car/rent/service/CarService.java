@@ -24,17 +24,17 @@ public class CarService {
 
     public void update(final CarDto carDto) {
         final Integer id = carDto.id();
-        final Car car = carRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Could not find the car with id: " + id));
+        final Car car = findById(id);
         car.setMark(carDto.mark());
         car.setModel(carDto.model());
         car.setBookPricePerHour(carDto.bookPricePerHour());
         car.setRentPricePerHour(carDto.rentPricePerHour());
+        car.setImgLink(carDto.imgUrl());
         carRepository.save(car);
     }
 
     public void delete(final Integer id) {
-        carRepository.deleteById(id);
+        carRepository.delete(findById(id));
     }
 
     public CarsDto findAll() {
