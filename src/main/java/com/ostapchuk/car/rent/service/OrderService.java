@@ -68,6 +68,11 @@ public class OrderService {
         final User user = userService.findById(id);
         final Map<String, List<Order>> rides = orderRepository.findAllByUserOrderByStartDesc(user).stream()
                 .collect(Collectors.groupingBy(Order::getUuid));
+        final List<RideDto> ridesDto = processRides(rides);
+        return new RidesDto(ridesDto);
+    }
+
+    private List<RideDto> processRides(final Map<String, List<Order>> rides) {
         final List<RideDto> ridesDto = new ArrayList<>();
         for (final Map.Entry<String, List<Order>> entry : rides.entrySet()) {
             final List<RideDetailsDto> rideDetailsDtos = new ArrayList<>();
@@ -81,7 +86,7 @@ public class OrderService {
             ridesDto.add(new RideDto(order.getStart().toLocalDate(), car.getMark(), car.getModel(),
                     retrieveRidePriceByOrders(orders), retrieveRideTimeByOrders(orders), rideDetailsDtos));
         }
-        return new RidesDto(ridesDto);
+        return ridesDto;
     }
 
     private boolean isStartRide(final OrderDto orderDto, final Car car) {
@@ -116,7 +121,7 @@ public class OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    // TODO: 3/17/2022 try to switch to reduce
+    // TODO: 3/17/2022 try to use reduce
     private int retrieveRideTimeByOrders(final List<Order> orders) {
         final int[] totalHours = {0};
         orders.forEach(o -> totalHours[0] += DateTimeUtil.retrieveDurationInHours(o.getStart(), o.getEnding()));
