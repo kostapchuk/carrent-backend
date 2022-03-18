@@ -25,3 +25,10 @@ spring:
 logging:
   level:
     org.hibernate.stat: DEBUG
+
+jwt:
+  secret: ${JWT_SECRET}
+  header: Authorization
+  expiration: 604800
+  refresh:
+    expiration: 86400000
