@@ -1,6 +1,7 @@
 package com.ostapchuk.car.rent.exception;
 
 import com.ostapchuk.car.rent.dto.ErrorResponseDto;
+import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestControllerAdvice
@@ -30,5 +32,17 @@ public record ExceptionAdviser() {
     @ExceptionHandler(JwtAuthenticationException.class)
     public ErrorResponseDto jwtAuthenticationException(final AccessDeniedException ex) {
         return new ErrorResponseDto(ex.getMessage(), UNAUTHORIZED.value());
+    }
+
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(PayPalRESTException.class)
+    public ErrorResponseDto payPalRESTException(final PayPalRESTException ex) {
+        return new ErrorResponseDto(ex.getMessage(), INTERNAL_SERVER_ERROR.value());
+    }
+
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Throwable.class)
+    public ErrorResponseDto generalException(final Throwable t) {
+        return new ErrorResponseDto("Some error occurred: " + t.getMessage(), INTERNAL_SERVER_ERROR.value());
     }
 }

@@ -32,3 +32,8 @@ jwt:
   expiration: 604800
   refresh:
     expiration: 86400000
+
+paypal:
+  mode: sandbox
+  clientId: ${PAYPAL_CLIENT_ID}
+  clientSecret: ${PAYPAL_SECRET}
