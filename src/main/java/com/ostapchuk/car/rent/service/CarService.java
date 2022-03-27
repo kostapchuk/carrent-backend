@@ -3,6 +3,7 @@ package com.ostapchuk.car.rent.service;
 import com.ostapchuk.car.rent.dto.CarDto;
 import com.ostapchuk.car.rent.dto.CarsDto;
 import com.ostapchuk.car.rent.entity.Car;
+import com.ostapchuk.car.rent.entity.CarStatus;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.mapper.CarMapper;
 import com.ostapchuk.car.rent.repository.CarRepository;
@@ -38,7 +39,7 @@ public class CarService {
     }
 
     public CarsDto findAll() {
-        final List<CarDto> carsDto = carRepository.findAll().stream()
+        final List<CarDto> carsDto = carRepository.findAllByOrderById().stream()
                 .map(carMapper::toDto)
                 .toList();
         return new CarsDto(carsDto);
@@ -51,5 +52,12 @@ public class CarService {
     public Car findById(final Integer id) {
         return carRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find car with id: " + id));
+    }
+
+    public CarsDto findAllFree() {
+        final List<CarDto> carsDto = carRepository.findAllByStatusOrderById(CarStatus.FREE).stream()
+                .map(carMapper::toDto)
+                .toList();
+        return new CarsDto(carsDto);
     }
 }

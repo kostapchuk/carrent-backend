@@ -22,6 +22,6 @@ public class AuthenticationService {
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         final User user = userService.findByEmail(request.getEmail());
         final String token = jwtTokenProvider.createToken(request.getEmail(), user.getRole().name());
-        return new AuthenticationResponseDto(request.getEmail(), token);
+        return new AuthenticationResponseDto(user.getId(), token);
     }
 }

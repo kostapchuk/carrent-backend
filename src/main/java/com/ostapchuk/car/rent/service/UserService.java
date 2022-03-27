@@ -1,5 +1,6 @@
 package com.ostapchuk.car.rent.service;
 
+import com.ostapchuk.car.rent.dto.RegisterUserDto;
 import com.ostapchuk.car.rent.dto.ResultDto;
 import com.ostapchuk.car.rent.dto.UserDto;
 import com.ostapchuk.car.rent.dto.UsersDto;
@@ -55,7 +56,7 @@ public class UserService {
         return new UsersDto(userDtos);
     }
 
-    public ResultDto create(final UserDto userDto) {
+    public ResultDto create(final RegisterUserDto userDto) {
         if (userRepository.existsByEmail(userDto.email())) {
             return new ResultDto("Please, provide another email", false);
         }

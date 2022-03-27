@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.dto;
 
 public record AuthenticationResponseDto(
-        String email,
+        Long userId,
         String token
 ) {
 }

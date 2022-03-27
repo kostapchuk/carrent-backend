@@ -1,5 +1,6 @@
 package com.ostapchuk.car.rent.controller;
 
+import com.ostapchuk.car.rent.dto.RegisterUserDto;
 import com.ostapchuk.car.rent.dto.RequestPaymentDto;
 import com.ostapchuk.car.rent.dto.ResultDto;
 import com.ostapchuk.car.rent.dto.RidesDto;
@@ -48,7 +49,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResultDto register(@RequestBody final UserDto userDto) {
+    public ResultDto register(@RequestBody final RegisterUserDto userDto) {
         return userService.create(userDto);
     }
 
