@@ -37,3 +37,14 @@ paypal:
   mode: sandbox
   clientId: ${PAYPAL_CLIENT_ID}
   clientSecret: ${PAYPAL_SECRET}
+
+aws:
+  access:
+    key:
+      id: { AWS_ACCESS_KEY_ID }
+      secret: { AWS_ACCESS_KEY_SECRET }
+  s3:
+    region:
+      name: { AWS_S3_REGION }
+    bucket:
+      name: { AWS_S3_BUCKET_NAME }
