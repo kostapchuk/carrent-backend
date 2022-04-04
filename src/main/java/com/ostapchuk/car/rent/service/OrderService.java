@@ -67,7 +67,7 @@ public class OrderService {
 
     public RidesDto findAllRidesByUserId(final Long id) {
         final User user = userService.findById(id);
-        final Map<String, List<Order>> rides = orderRepository.findAllByUserOrderByStartDesc(user).stream()
+        final Map<String, List<Order>> rides = orderRepository.findAllByUser(user).stream()
                 .collect(Collectors.groupingBy(Order::getUuid));
         final List<RideDto> ridesDto = processRides(rides);
         return new RidesDto(ridesDto);
@@ -87,7 +87,9 @@ public class OrderService {
             ridesDto.add(new RideDto(order.getStart().toLocalDate(), car.getMark(), car.getModel(),
                     retrieveRidePriceByOrders(orders), retrieveRideTimeByOrders(orders), rideDetailsDtos));
         }
-        return ridesDto;
+        return ridesDto.stream()
+                .sorted(Comparator.comparing(RideDto::date).reversed())
+                .toList();
     }
 
     private boolean isStartRide(final OrderDto orderDto, final Car car) {

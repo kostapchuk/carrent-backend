@@ -30,7 +30,7 @@ public record ExceptionAdviser() {
 
     @ResponseStatus(UNAUTHORIZED)
     @ExceptionHandler(JwtAuthenticationException.class)
-    public ErrorResponseDto jwtAuthenticationException(final AccessDeniedException ex) {
+    public ErrorResponseDto jwtAuthenticationException(final JwtAuthenticationException ex) {
         return new ErrorResponseDto(ex.getMessage(), UNAUTHORIZED.value());
     }
 

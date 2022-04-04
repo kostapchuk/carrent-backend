@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletResponse;
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -40,6 +41,12 @@ public class UserController {
     @PreAuthorize("hasAuthority('users:read')")
     public RidesDto findAllRidesById(@PathVariable final Long id) {
         return orderService.findAllRidesByUserId(id);
+    }
+
+    @GetMapping("/{id}/balance")
+    @PreAuthorize("hasAuthority('users:read')")
+    public BigDecimal findBalanceById(@PathVariable final Long id) {
+        return userService.findBalanceById(id);
     }
 
     @GetMapping
@@ -67,30 +74,31 @@ public class UserController {
 
     @SneakyThrows
     @PostMapping("/pay")
-//    @PreAuthorize("hasAuthority('users:read')")
-    public void payTheDebt(@RequestBody final RequestPaymentDto paymentDto, final HttpServletResponse response) {
-        final Payment payment = paypalService.createPayment(paymentDto.price(), "USD", "paypal",
-                "sale", "standard description", "http://localhost:8080/api/v1/users/cancel",
-                "http://localhost:8080/api/v1/users/success");
+    @PreAuthorize("hasAuthority('users:read')")
+    public String payTheDebt(@RequestBody final RequestPaymentDto paymentDto, final HttpServletResponse response) {
+        final Payment payment = paypalService.createPayment(paymentDto.userId(), "USD", "paypal",
+                "sale", "standard description", "http://localhost:3000/cancelled-payment",
+                "http://localhost:3000/success-payment");
         for (final Links link : payment.getLinks()) {
             if (link.getRel().equals("approval_url")) {
-                response.sendRedirect(link.getHref());
+                return link.getHref();
             }
         }
+        return "";
     }
 
     @GetMapping("/cancel")
-//    @PreAuthorize("hasAuthority('users:read')")
-    public String cancel() {
-        return "Cancelled";
+    public boolean cancel(@RequestParam("paymentId") final String paymentId, @RequestParam("PayerID") final String payerId) {
+        final Payment payment = paypalService.executePayment(paymentId, payerId);
+        //            userService.updateBalanceById();
+        return payment.getState().equals("approved");
     }
 
     @GetMapping("/success")
-//    @PreAuthorize("hasAuthority('users:read')")
     public String success(@RequestParam("paymentId") final String paymentId, @RequestParam("PayerID") final String payerId) {
         final Payment payment = paypalService.executePayment(paymentId, payerId);
-        System.out.println(payment.toJSON());
         if (payment.getState().equals("approved")) {
+//            userService.updateBalanceById();
             return "success";
         } else {
             return "Not approved";

@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.ostapchuk.car.rent.entity.Role.USER;
@@ -93,5 +94,10 @@ public class UserService {
 
     public User findByEmail(final String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User does not exist"));
+    }
+
+    public BigDecimal findBalanceById(final Long id) {
+        return userRepository.findById(id).map(User::getBalance)
+                .orElseThrow(() -> new EntityNotFoundException("User does not exist"));
     }
 }

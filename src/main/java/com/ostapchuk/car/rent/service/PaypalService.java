@@ -21,10 +21,17 @@ import java.util.List;
 public class PaypalService {
 
     private final APIContext apiContext;
+    private final UserService userService;
 
     @SneakyThrows({PayPalRESTException.class})
-    public Payment createPayment(final BigDecimal total, final String currency, final String method, final String intent,
+    public Payment createPayment(final Long userId, final String currency, final String method, final String intent,
                                  final String description, final String cancelUrl, final String successUrl) {
+        BigDecimal total = userService.findById(userId).getBalance();
+        if (total.compareTo(BigDecimal.ZERO) < 0) {
+            total = total.multiply(new BigDecimal("-1"));
+        } else {
+            total = BigDecimal.ZERO;
+        }
         final Amount amount = new Amount();
         amount.setCurrency(currency);
         amount.setTotal(total.toString());

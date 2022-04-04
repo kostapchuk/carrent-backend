@@ -37,6 +37,11 @@ public class CarController {
         return carService.findAllFree();
     }
 
+    @GetMapping("/available/{userId}")
+    public CarsDto findAllAvailable(@PathVariable final Long userId) {
+        return carService.findAllAvailableForUser(userId);
+    }
+
     @GetMapping("/{id}")
 //    @PreAuthorize("hasAuthority('users:read')")
     public CarDto findById(@PathVariable final Integer id) {
