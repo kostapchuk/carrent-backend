@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 @EnableWebSecurity
@@ -36,6 +37,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(GET, "/api/v1/cars/free").permitAll()
                 .antMatchers(GET, "/api/v1/cars/available/*").permitAll()
                 .antMatchers(GET, "/api/v1/cars/*").permitAll()
+                .antMatchers(POST, "/api/v1/users").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

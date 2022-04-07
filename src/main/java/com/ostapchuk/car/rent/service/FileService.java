@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.service;
 
 import com.amazonaws.AmazonServiceException;
-import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class FileService {
 
-    private final AmazonS3 amazonS3;
+    private final AmazonS3Client amazonS3;
 
     @Value("${aws.s3.bucket.name}")
     private String s3BucketName;
@@ -57,7 +57,7 @@ public class FileService {
             final PutObjectRequest putObjectRequest = new PutObjectRequest(s3BucketName, fileName, file);
             amazonS3.putObject(putObjectRequest);
 //            Files.delete(file.toPath()); // Remove the file locally created in the project folder
-            fileNameOpt = Optional.of(fileName);
+            fileNameOpt = Optional.of(amazonS3.getResourceUrl(s3BucketName, fileName));
         } catch (final AmazonServiceException e) {
             log.error("Error {} occurred while uploading file", e.getLocalizedMessage());
         }

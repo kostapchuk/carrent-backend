@@ -17,7 +17,9 @@ public record UserMapper() {
                 user.getStatus().toString(),
                 user.isVerified(),
                 user.getRole().toString(),
-                user.getBalance()
+                user.getBalance(),
+                user.getDocument() == null ? null : user.getDocument().getImgLink1(),
+                user.getDocument() == null ? null : user.getDocument().getImgLink2()
         );
     }
 }

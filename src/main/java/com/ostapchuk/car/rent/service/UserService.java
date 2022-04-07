@@ -2,6 +2,8 @@ package com.ostapchuk.car.rent.service;
 
 import com.ostapchuk.car.rent.dto.RegisterUserDto;
 import com.ostapchuk.car.rent.dto.ResultDto;
+import com.ostapchuk.car.rent.dto.RolesDto;
+import com.ostapchuk.car.rent.dto.StatusesDto;
 import com.ostapchuk.car.rent.dto.UserDto;
 import com.ostapchuk.car.rent.dto.UsersDto;
 import com.ostapchuk.car.rent.entity.Role;
@@ -18,9 +20,12 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
+import static com.ostapchuk.car.rent.entity.Role.ADMIN;
 import static com.ostapchuk.car.rent.entity.Role.USER;
 import static com.ostapchuk.car.rent.entity.UserStatus.ACTIVE;
+import static com.ostapchuk.car.rent.entity.UserStatus.BANNED;
 import static java.math.BigDecimal.ZERO;
 
 @Service
@@ -51,7 +56,7 @@ public class UserService {
     }
 
     public UsersDto findAll() {
-        final List<UserDto> userDtos = userRepository.findAll().stream()
+        final List<UserDto> userDtos = userRepository.findAllByOrderById().stream()
                 .map(userMapper::toDto)
                 .toList();
         return new UsersDto(userDtos);
@@ -83,11 +88,18 @@ public class UserService {
                 .lastName(userDto.lastName())
                 .email(userDto.email())
                 .phone(userDto.phone())
-                .password(passwordEncoder.encode(userDto.password()))
                 .role(Role.valueOf(userDto.role()))
                 .status(UserStatus.valueOf(userDto.status()))
+                .balance(userDto.balance())
                 .verified(userDto.verified())
                 .build();
+        if (userDto.id() != null) {
+            final String password = userRepository.findById(userDto.id()).map(User::getPassword)
+                    .orElseThrow(() -> new EntityNotFoundException("Not found"));
+            user.setPassword(password);
+        } else {
+            user.setPassword(passwordEncoder.encode(userDto.password()));
+        }
         userRepository.save(user);
         return new ResultDto("Successfully created your account, thank you!", true);
     }
@@ -99,5 +111,13 @@ public class UserService {
     public BigDecimal findBalanceById(final Long id) {
         return userRepository.findById(id).map(User::getBalance)
                 .orElseThrow(() -> new EntityNotFoundException("User does not exist"));
+    }
+
+    public StatusesDto findAllStatuses() {
+        return new StatusesDto(Set.of(ACTIVE, BANNED));
+    }
+
+    public RolesDto findAllRoles() {
+        return new RolesDto(Set.of(USER, ADMIN));
     }
 }

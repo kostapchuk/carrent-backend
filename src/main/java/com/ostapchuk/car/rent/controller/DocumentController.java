@@ -3,10 +3,10 @@ package com.ostapchuk.car.rent.controller;
 import com.ostapchuk.car.rent.dto.UploadRequestDto;
 import com.ostapchuk.car.rent.service.DocumentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,10 +19,11 @@ public class DocumentController {
 
     private final DocumentService documentService;
 
-    @PostMapping
-    public String save(@RequestParam("file") final MultipartFile multipartFile,
-                       @RequestBody final UploadRequestDto requestDto) {
-        documentService.save(multipartFile, requestDto);
-        return MESSAGE_1;
+    @PostMapping(consumes = {"multipart/form-data"})
+    @PreAuthorize("hasAuthority('users:read')")
+    public String save(@RequestPart("payload") final UploadRequestDto requestDto,
+                       @RequestPart("file") final MultipartFile file) {
+        documentService.save(file, requestDto);
+        return MESSAGE_1 + " " + file.getOriginalFilename();
     }
 }

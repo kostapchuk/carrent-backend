@@ -4,6 +4,8 @@ import com.ostapchuk.car.rent.dto.RegisterUserDto;
 import com.ostapchuk.car.rent.dto.RequestPaymentDto;
 import com.ostapchuk.car.rent.dto.ResultDto;
 import com.ostapchuk.car.rent.dto.RidesDto;
+import com.ostapchuk.car.rent.dto.RolesDto;
+import com.ostapchuk.car.rent.dto.StatusesDto;
 import com.ostapchuk.car.rent.dto.UserDto;
 import com.ostapchuk.car.rent.dto.UsersDto;
 import com.ostapchuk.car.rent.service.OrderService;
@@ -88,13 +90,27 @@ public class UserController {
     }
 
     @GetMapping("/cancel")
+    @PreAuthorize("hasAuthority('users:read')")
     public boolean cancel(@RequestParam("paymentId") final String paymentId, @RequestParam("PayerID") final String payerId) {
         final Payment payment = paypalService.executePayment(paymentId, payerId);
         //            userService.updateBalanceById();
         return payment.getState().equals("approved");
     }
 
+    @GetMapping("/roles")
+    @PreAuthorize("hasAuthority('users:write')")
+    public RolesDto findRoles() {
+        return userService.findAllRoles();
+    }
+
+    @GetMapping("/statuses")
+    @PreAuthorize("hasAuthority('users:write')")
+    public StatusesDto findStatuses() {
+        return userService.findAllStatuses();
+    }
+
     @GetMapping("/success")
+    @PreAuthorize("hasAuthority('users:read')")
     public String success(@RequestParam("paymentId") final String paymentId, @RequestParam("PayerID") final String payerId) {
         final Payment payment = paypalService.executePayment(paymentId, payerId);
         if (payment.getState().equals("approved")) {
