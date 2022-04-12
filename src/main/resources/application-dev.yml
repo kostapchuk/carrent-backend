@@ -48,3 +48,6 @@ aws:
       name: ${AWS_S3_REGION}
     bucket:
       name: ${AWS_S3_BUCKET_NAME}
+
+frontend:
+  link: ${FRONTEND_LINK}

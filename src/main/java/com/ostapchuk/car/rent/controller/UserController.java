@@ -1,5 +1,6 @@
 package com.ostapchuk.car.rent.controller;
 
+import com.ostapchuk.car.rent.config.FrontendLinkConfig;
 import com.ostapchuk.car.rent.dto.RegisterUserDto;
 import com.ostapchuk.car.rent.dto.RequestPaymentDto;
 import com.ostapchuk.car.rent.dto.ResultDto;
@@ -37,6 +38,8 @@ public class UserController {
     private final UserService userService;
     private final OrderService orderService;
     private final PaypalService paypalService;
+
+    private final FrontendLinkConfig frontendLink;
 
     // TODO: 3/18/2022 check the same user
     @GetMapping("/{id}/rides")
@@ -77,8 +80,8 @@ public class UserController {
     @PreAuthorize("hasAuthority('users:read')")
     public String payTheDebt(@RequestBody final RequestPaymentDto paymentDto, final HttpServletResponse response) {
         final Payment payment = paypalService.createPayment(paymentDto.userId(), "USD", "paypal",
-                "sale", "standard description", "http://localhost:3000/cancelled-payment",
-                "http://localhost:3000/success-payment");
+                "sale", "standard description", frontendLink.link() + "/cancelled-payment",
+                frontendLink.link() + "/success-payment");
         for (final Links link : payment.getLinks()) {
             if (link.getRel().equals("approval_url")) {
                 return link.getHref();
