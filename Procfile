@@ -1,0 +1,1 @@
+web: java -Dserver.port=$APPLICATION_PORT $JAVA_OPTS -jar build/libs/*.jar
