@@ -52,7 +52,6 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAuthority('users:write')")
     public UsersDto findAll() {
         return userService.findAll();
     }
@@ -63,14 +62,13 @@ public class UserController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAuthority('users:write')")
     public ResultDto update(@RequestBody final UserDto userDto) {
         return userService.update(userDto);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('users:delete')")
-    public void update(@PathVariable final Long id) {
+    public void delete(@PathVariable final Long id) {
         userService.deleteById(id);
     }
 
