@@ -23,7 +23,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private static final List<String> skipFilterUrls =
             Arrays.asList("/api/v1/cars", "/api/v1/cars/free", "/api/v1/cars/*", "/api/v1/auth/**",
-                    "/api/v1/cars/available/*", "/api/v1/users");
+                    "/api/v1/cars/available/*", "/api/v1/users", "/api/v1/payments/**");
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override

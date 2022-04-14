@@ -61,9 +61,6 @@ public class FileService {
         } catch (final AmazonServiceException e) {
             log.error("Error {} occurred while uploading file", e.getLocalizedMessage());
         }
-//        catch (final IOException ex) {
-//            log.error("Error {} occurred while deleting temporary file", ex.getLocalizedMessage());
-//        }
         return CompletableFuture.completedFuture(fileNameOpt);
     }
 

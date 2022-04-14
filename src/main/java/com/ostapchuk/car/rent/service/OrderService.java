@@ -33,10 +33,6 @@ import static com.ostapchuk.car.rent.entity.CarStatus.IN_RENT_PAUSED;
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT;
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT_PAUSED;
 
-// TODO: 3/17/2022 as feature could be add bonuses, promo codes
-// bonuses - just a gift certificate (in minutes or in rubles) which one user could give another one
-// promo codes - some free (minutes or rubles)
-
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -48,7 +44,6 @@ public class OrderService {
 
     private final Random random = new Random(); // TODO: 3/17/2022 plusHours(random.nextInt(25) + 1L)
 
-    // TODO: 3/20/2022 mb remove
     @Transactional
     public void process(final OrderDto orderDto) {
         final User user = userService.findById(orderDto.userId());

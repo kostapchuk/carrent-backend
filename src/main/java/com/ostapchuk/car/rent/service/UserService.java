@@ -9,8 +9,8 @@ import com.ostapchuk.car.rent.dto.UsersDto;
 import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.entity.UserStatus;
+import com.ostapchuk.car.rent.exception.BalanceException;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
-import com.ostapchuk.car.rent.exception.NegativeBalanceException;
 import com.ostapchuk.car.rent.exception.UserUnverifiedException;
 import com.ostapchuk.car.rent.mapper.UserMapper;
 import com.ostapchuk.car.rent.repository.UserRepository;
@@ -22,10 +22,8 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
-import static com.ostapchuk.car.rent.entity.Role.ADMIN;
 import static com.ostapchuk.car.rent.entity.Role.USER;
 import static com.ostapchuk.car.rent.entity.UserStatus.ACTIVE;
-import static com.ostapchuk.car.rent.entity.UserStatus.BANNED;
 import static java.math.BigDecimal.ZERO;
 
 @Service
@@ -46,7 +44,7 @@ public class UserService {
             throw new UserUnverifiedException("You are not verified. Please, wait for the verification");
         }
         if (user.getBalance().compareTo(ZERO) < 0) {
-            throw new NegativeBalanceException("The balance is negative, please, pay the debt");
+            throw new BalanceException("The balance is negative, please, pay the debt");
         }
     }
 
@@ -114,10 +112,24 @@ public class UserService {
     }
 
     public StatusesDto findAllStatuses() {
-        return new StatusesDto(Set.of(ACTIVE, BANNED));
+        return new StatusesDto(Set.of(UserStatus.values()));
     }
 
     public RolesDto findAllRoles() {
-        return new RolesDto(Set.of(USER, ADMIN));
+        return new RolesDto(Set.of(Role.values()));
+    }
+
+    public void updateBalance(final Long userId) {
+        final User user = findById(userId);
+        user.setBalance(ZERO);
+        userRepository.save(user);
+    }
+
+    public BigDecimal findDept(final Long userId) {
+        final BigDecimal total = findById(userId).getBalance();
+        if (total.compareTo(BigDecimal.ZERO) >= 0) {
+            throw new BalanceException("The balance is positive. Nothing to pay");
+        }
+        return total.negate();
     }
 }

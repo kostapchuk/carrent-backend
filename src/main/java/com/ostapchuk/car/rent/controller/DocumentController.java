@@ -15,15 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class DocumentController {
 
-    private static final String MESSAGE_1 = "Uploaded the file successfully";
-
     private final DocumentService documentService;
 
     @PostMapping(consumes = {"multipart/form-data"})
     @PreAuthorize("hasAuthority('users:read')")
-    public String save(@RequestPart("payload") final UploadRequestDto requestDto,
-                       @RequestPart("file") final MultipartFile file) {
+    public void save(@RequestPart("payload") final UploadRequestDto requestDto,
+                     @RequestPart("file") final MultipartFile file) {
         documentService.save(file, requestDto);
-        return MESSAGE_1 + " " + file.getOriginalFilename();
     }
 }

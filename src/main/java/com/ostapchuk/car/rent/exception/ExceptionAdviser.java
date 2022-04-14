@@ -16,7 +16,7 @@ import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 public record ExceptionAdviser() {
 
     @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler({EntityNotFoundException.class, OrderCreationException.class, NegativeBalanceException.class,
+    @ExceptionHandler({EntityNotFoundException.class, OrderCreationException.class, BalanceException.class,
             UserUnverifiedException.class})
     public ErrorResponseDto entityNotFoundException(final RuntimeException ex) {
         return new ErrorResponseDto(ex.getMessage(), BAD_REQUEST.value());

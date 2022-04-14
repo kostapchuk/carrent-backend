@@ -14,12 +14,12 @@ import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
-public class CorsFilter123 {
+public class CorsFilterConfig {
 
     private final FrontendLinkConfig frontendLinkConfig;
 
     @Bean
-    public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
+    public FilterRegistrationBean<org.springframework.web.filter.CorsFilter> simpleCorsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
