@@ -75,4 +75,16 @@ public class UserController {
     public StatusesDto findStatuses() {
         return userService.findAllStatuses();
     }
+
+    @GetMapping("/{id}/debt")
+    @PreAuthorize("hasAuthority('users:read')")
+    public BigDecimal findDebt(@PathVariable final Long id) {
+        return userService.findDept(id);
+    }
+
+    @PostMapping("/{id}/pay")
+    @PreAuthorize("hasAuthority('users:read')")
+    public void payDebt(@PathVariable final Long id) {
+        userService.payDebt(id);
+    }
 }

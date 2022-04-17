@@ -1,7 +1,6 @@
 package com.ostapchuk.car.rent.exception;
 
 import com.ostapchuk.car.rent.dto.ErrorResponseDto;
-import com.paypal.base.rest.PayPalRESTException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -32,12 +31,6 @@ public record ExceptionAdviser() {
     @ExceptionHandler(JwtAuthenticationException.class)
     public ErrorResponseDto jwtAuthenticationException(final JwtAuthenticationException ex) {
         return new ErrorResponseDto(ex.getMessage(), UNAUTHORIZED.value());
-    }
-
-    @ResponseStatus(INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(PayPalRESTException.class)
-    public ErrorResponseDto payPalRESTException(final PayPalRESTException ex) {
-        return new ErrorResponseDto(ex.getMessage(), INTERNAL_SERVER_ERROR.value());
     }
 
     @ResponseStatus(INTERNAL_SERVER_ERROR)
