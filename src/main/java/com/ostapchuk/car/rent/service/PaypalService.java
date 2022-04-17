@@ -41,8 +41,7 @@ public class PaypalService {
         payment.setId(paymentId);
         final PaymentExecution paymentExecute = new PaymentExecution();
         paymentExecute.setPayerId(payerId);
-        final Payment executedPayment = payment.execute(apiContext, paymentExecute);
-        
+        payment.execute(apiContext, paymentExecute);
     }
 
     @SneakyThrows({PayPalRESTException.class})

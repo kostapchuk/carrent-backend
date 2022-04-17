@@ -1,6 +1,8 @@
 package com.ostapchuk.car.rent.dto;
 
 public record RequestPaymentDto(
-        Long userId
+        Long userId,
+        String successUrl,
+        String cancelUrl
 ) {
 }
