@@ -119,7 +119,7 @@ public class UserService {
         return new RolesDto(Set.of(Role.values()));
     }
 
-    public void updateBalance(final Long userId) {
+    public void payDebt(final Long userId) {
         final User user = findById(userId);
         user.setBalance(ZERO);
         userRepository.save(user);
