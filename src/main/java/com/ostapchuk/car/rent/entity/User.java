@@ -11,7 +11,9 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.List;
@@ -60,6 +62,10 @@ public class User {
 
     @Column(name = "verified", nullable = false)
     private boolean verified;
+
+    @OneToOne
+    @JoinColumn(name = "document_id", referencedColumnName = "id")
+    private Document document;
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;

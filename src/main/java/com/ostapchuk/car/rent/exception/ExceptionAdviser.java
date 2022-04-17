@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.FORBIDDEN;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @RestControllerAdvice
 public record ExceptionAdviser() {
 
     @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler({EntityNotFoundException.class, OrderCreationException.class, NegativeBalanceException.class,
+    @ExceptionHandler({EntityNotFoundException.class, OrderCreationException.class, BalanceException.class,
             UserUnverifiedException.class})
     public ErrorResponseDto entityNotFoundException(final RuntimeException ex) {
         return new ErrorResponseDto(ex.getMessage(), BAD_REQUEST.value());
@@ -28,7 +29,13 @@ public record ExceptionAdviser() {
 
     @ResponseStatus(UNAUTHORIZED)
     @ExceptionHandler(JwtAuthenticationException.class)
-    public ErrorResponseDto jwtAuthenticationException(final AccessDeniedException ex) {
+    public ErrorResponseDto jwtAuthenticationException(final JwtAuthenticationException ex) {
         return new ErrorResponseDto(ex.getMessage(), UNAUTHORIZED.value());
+    }
+
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Throwable.class)
+    public ErrorResponseDto generalException(final Throwable t) {
+        return new ErrorResponseDto("Some error occurred: " + t.getMessage(), INTERNAL_SERVER_ERROR.value());
     }
 }

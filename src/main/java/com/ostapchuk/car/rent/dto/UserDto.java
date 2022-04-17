@@ -12,6 +12,8 @@ public record UserDto(
         String status,
         Boolean verified,
         String role,
-        BigDecimal balance
+        BigDecimal balance,
+        String documentImg1,
+        String documentImg2
 ) {
 }

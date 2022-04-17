@@ -1,13 +1,16 @@
 package com.ostapchuk.car.rent.service;
 
+import com.ostapchuk.car.rent.dto.RegisterUserDto;
 import com.ostapchuk.car.rent.dto.ResultDto;
+import com.ostapchuk.car.rent.dto.RolesDto;
+import com.ostapchuk.car.rent.dto.StatusesDto;
 import com.ostapchuk.car.rent.dto.UserDto;
 import com.ostapchuk.car.rent.dto.UsersDto;
 import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.entity.UserStatus;
+import com.ostapchuk.car.rent.exception.BalanceException;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
-import com.ostapchuk.car.rent.exception.NegativeBalanceException;
 import com.ostapchuk.car.rent.exception.UserUnverifiedException;
 import com.ostapchuk.car.rent.mapper.UserMapper;
 import com.ostapchuk.car.rent.repository.UserRepository;
@@ -15,7 +18,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 import static com.ostapchuk.car.rent.entity.Role.USER;
 import static com.ostapchuk.car.rent.entity.UserStatus.ACTIVE;
@@ -39,7 +44,7 @@ public class UserService {
             throw new UserUnverifiedException("You are not verified. Please, wait for the verification");
         }
         if (user.getBalance().compareTo(ZERO) < 0) {
-            throw new NegativeBalanceException("The balance is negative, please, pay the debt");
+            throw new BalanceException("The balance is negative, please, pay the debt");
         }
     }
 
@@ -49,13 +54,13 @@ public class UserService {
     }
 
     public UsersDto findAll() {
-        final List<UserDto> userDtos = userRepository.findAll().stream()
+        final List<UserDto> userDtos = userRepository.findAllByOrderById().stream()
                 .map(userMapper::toDto)
                 .toList();
         return new UsersDto(userDtos);
     }
 
-    public ResultDto create(final UserDto userDto) {
+    public ResultDto create(final RegisterUserDto userDto) {
         if (userRepository.existsByEmail(userDto.email())) {
             return new ResultDto("Please, provide another email", false);
         }
@@ -81,16 +86,50 @@ public class UserService {
                 .lastName(userDto.lastName())
                 .email(userDto.email())
                 .phone(userDto.phone())
-                .password(passwordEncoder.encode(userDto.password()))
                 .role(Role.valueOf(userDto.role()))
                 .status(UserStatus.valueOf(userDto.status()))
+                .balance(userDto.balance())
                 .verified(userDto.verified())
                 .build();
+        if (userDto.id() != null) {
+            final String password = userRepository.findById(userDto.id()).map(User::getPassword)
+                    .orElseThrow(() -> new EntityNotFoundException("Not found"));
+            user.setPassword(password);
+        } else {
+            user.setPassword(passwordEncoder.encode(userDto.password()));
+        }
         userRepository.save(user);
         return new ResultDto("Successfully created your account, thank you!", true);
     }
 
     public User findByEmail(final String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new EntityNotFoundException("User does not exist"));
+    }
+
+    public BigDecimal findBalanceById(final Long id) {
+        return userRepository.findById(id).map(User::getBalance)
+                .orElseThrow(() -> new EntityNotFoundException("User does not exist"));
+    }
+
+    public StatusesDto findAllStatuses() {
+        return new StatusesDto(Set.of(UserStatus.values()));
+    }
+
+    public RolesDto findAllRoles() {
+        return new RolesDto(Set.of(Role.values()));
+    }
+
+    public void payDebt(final Long userId) {
+        final User user = findById(userId);
+        user.setBalance(ZERO);
+        userRepository.save(user);
+    }
+
+    public BigDecimal findDept(final Long userId) {
+        final BigDecimal total = findById(userId).getBalance();
+        if (total.compareTo(BigDecimal.ZERO) >= 0) {
+            throw new BalanceException("The balance is positive. Nothing to pay");
+        }
+        return total.negate();
     }
 }

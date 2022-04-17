@@ -1,12 +1,13 @@
 package com.ostapchuk.car.rent;
 
+import com.ostapchuk.car.rent.config.FrontendLinkConfig;
 import com.ostapchuk.car.rent.config.JwtConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
 @SpringBootApplication
-@EnableConfigurationProperties({JwtConfig.class})
+@EnableConfigurationProperties({JwtConfig.class, FrontendLinkConfig.class})
 public class CarrentBackendApplication {
 
     public static void main(final String[] args) {

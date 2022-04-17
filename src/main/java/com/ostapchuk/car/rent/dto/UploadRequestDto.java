@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.dto;
 
-public record AuthenticationResponseDto(
+public record UploadRequestDto(
         Long userId,
-        String token
+        int imgNumber
 ) {
 }

@@ -33,10 +33,6 @@ import static com.ostapchuk.car.rent.entity.CarStatus.IN_RENT_PAUSED;
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT;
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT_PAUSED;
 
-// TODO: 3/17/2022 as feature could be add bonuses, promo codes
-// bonuses - just a gift certificate (in minutes or in rubles) which one user could give another one
-// promo codes - some free (minutes or rubles)
-
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -66,7 +62,7 @@ public class OrderService {
 
     public RidesDto findAllRidesByUserId(final Long id) {
         final User user = userService.findById(id);
-        final Map<String, List<Order>> rides = orderRepository.findAllByUserOrderByStartDesc(user).stream()
+        final Map<String, List<Order>> rides = orderRepository.findAllByUser(user).stream()
                 .collect(Collectors.groupingBy(Order::getUuid));
         final List<RideDto> ridesDto = processRides(rides);
         return new RidesDto(ridesDto);
@@ -86,7 +82,9 @@ public class OrderService {
             ridesDto.add(new RideDto(order.getStart().toLocalDate(), car.getMark(), car.getModel(),
                     retrieveRidePriceByOrders(orders), retrieveRideTimeByOrders(orders), rideDetailsDtos));
         }
-        return ridesDto;
+        return ridesDto.stream()
+                .sorted(Comparator.comparing(RideDto::date).reversed())
+                .toList();
     }
 
     private boolean isStartRide(final OrderDto orderDto, final Car car) {

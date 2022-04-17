@@ -26,8 +26,8 @@ public record CarMapper() {
                 car.getModel(),
                 car.getRentPricePerHour(),
                 car.getBookPricePerHour(),
-                car.getStatus().toString(),
-                car.getImgLink()
+                car.getImgLink(),
+                car.getStatus().toString()
         );
     }
 }

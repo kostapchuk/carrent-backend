@@ -13,7 +13,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.GET;
 
 @Configuration
 @EnableWebSecurity
@@ -30,9 +30,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
-                .antMatchers("/api/v1/auth/login").permitAll()
-                .antMatchers(POST, "/api/v1/users").permitAll()
+                .antMatchers("/api/v1/auth/*").permitAll()
+                .antMatchers(GET, "/api/v1/cars").permitAll()
+                .antMatchers(GET, "/api/v1/cars/free").permitAll()
+                .antMatchers(GET, "/api/v1/cars/available/*").permitAll()
+                .antMatchers(GET, "/api/v1/cars/*").permitAll()
+                .antMatchers("/api/v1/users").permitAll()
+                .antMatchers("/api/v1/payments/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

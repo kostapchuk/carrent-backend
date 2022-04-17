@@ -1,7 +1,10 @@
 package com.ostapchuk.car.rent.controller;
 
+import com.ostapchuk.car.rent.dto.RegisterUserDto;
 import com.ostapchuk.car.rent.dto.ResultDto;
 import com.ostapchuk.car.rent.dto.RidesDto;
+import com.ostapchuk.car.rent.dto.RolesDto;
+import com.ostapchuk.car.rent.dto.StatusesDto;
 import com.ostapchuk.car.rent.dto.UserDto;
 import com.ostapchuk.car.rent.dto.UsersDto;
 import com.ostapchuk.car.rent.service.OrderService;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.math.BigDecimal;
 
 @RestController
 @RequestMapping("/api/v1/users")
@@ -32,26 +37,54 @@ public class UserController {
         return orderService.findAllRidesByUserId(id);
     }
 
+    @GetMapping("/{id}/balance")
+    @PreAuthorize("hasAuthority('users:read')")
+    public BigDecimal findBalanceById(@PathVariable final Long id) {
+        return userService.findBalanceById(id);
+    }
+
     @GetMapping
-    @PreAuthorize("hasAuthority('users:write')")
     public UsersDto findAll() {
         return userService.findAll();
     }
 
     @PostMapping
-    public ResultDto register(@RequestBody final UserDto userDto) {
+    public ResultDto register(@RequestBody final RegisterUserDto userDto) {
         return userService.create(userDto);
     }
 
     @PutMapping
-    @PreAuthorize("hasAuthority('users:write')")
     public ResultDto update(@RequestBody final UserDto userDto) {
         return userService.update(userDto);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('users:delete')")
-    public void update(@PathVariable final Long id) {
+    public void delete(@PathVariable final Long id) {
         userService.deleteById(id);
+    }
+
+    @GetMapping("/roles")
+    @PreAuthorize("hasAuthority('users:write')")
+    public RolesDto findRoles() {
+        return userService.findAllRoles();
+    }
+
+    @GetMapping("/statuses")
+    @PreAuthorize("hasAuthority('users:write')")
+    public StatusesDto findStatuses() {
+        return userService.findAllStatuses();
+    }
+
+    @GetMapping("/{id}/debt")
+    @PreAuthorize("hasAuthority('users:read')")
+    public BigDecimal findDebt(@PathVariable final Long id) {
+        return userService.findDept(id);
+    }
+
+    @PostMapping("/{id}/pay")
+    @PreAuthorize("hasAuthority('users:read')")
+    public void payDebt(@PathVariable final Long id) {
+        userService.payDebt(id);
     }
 }
