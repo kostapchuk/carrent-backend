@@ -28,6 +28,7 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.7'
     implementation 'org.springdoc:springdoc-openapi-security:1.6.7'
     compileOnly 'org.projectlombok:lombok'
+    compileOnly 'org.flywaydb:flyway-core'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
