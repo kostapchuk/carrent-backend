@@ -20,6 +20,11 @@ spring:
     driver-class-name: org.postgresql.Driver
   flyway:
     baseline-on-migrate: true
+  cache:
+    type: redis
+  redis:
+    port: ${REDIS_CACHE_PORT:6379}
+    host: ${REDIS_CACHE_HOST:localhost}
 
 management:
   endpoints.web.exposure.include: 'prometheus, health'

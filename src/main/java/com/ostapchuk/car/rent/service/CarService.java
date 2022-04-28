@@ -9,8 +9,8 @@ import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.mapper.CarMapper;
 import com.ostapchuk.car.rent.repository.CarRepository;
 import com.ostapchuk.car.rent.repository.OrderRepository;
-import com.ostapchuk.car.rent.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,7 +22,6 @@ public class CarService {
 
     private final CarRepository carRepository;
     private final OrderRepository orderRepository;
-    private final UserRepository userRepository;
     private final UserService userService;
     private final CarMapper carMapper;
 
@@ -68,6 +67,7 @@ public class CarService {
         return new CarsDto(carsDto);
     }
 
+    @Cacheable(value = "cars")
     public CarsDto findAllAvailableForUser(final Long userId) {
         final List<Car> freeCars = new ArrayList<>();
         orderRepository.findFirstByUserAndEndingIsNull(userService.findById(userId))
