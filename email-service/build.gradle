@@ -1,0 +1,7 @@
+bootJar {
+    enabled = true
+}
+
+bootBuildImage {
+    imageName = 'qjnzero/' + rootProject.name + '-' + project.name
+}
