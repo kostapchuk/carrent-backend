@@ -25,6 +25,8 @@ spring:
   redis:
     port: ${REDIS_CACHE_PORT:6379}
     host: ${REDIS_CACHE_HOST:localhost}
+  session:
+    store-type: mongodb
 
 management:
   endpoints.web.exposure.include: 'prometheus, health'
