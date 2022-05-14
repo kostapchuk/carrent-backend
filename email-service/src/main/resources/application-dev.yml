@@ -11,5 +11,5 @@ spring:
 
 sender:
   auth:
-    userName: kera.ostapchuk1@mail.ru
-    password: suSpc2x4AJvfZwYDyGEG
+    username: ${SENDER_AUTH_USERNAME}
+    password: ${SENDER_AUTH_PASSWORD}

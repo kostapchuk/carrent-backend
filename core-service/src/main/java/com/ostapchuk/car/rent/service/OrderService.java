@@ -62,7 +62,7 @@ public class OrderService {
 
     public RidesDto findAllRidesByUserId(final Long id) {
         final User user = userService.findById(id);
-        final Map<String, List<Order>> rides = orderRepository.findAllByUser(user).stream()
+        final Map<String, List<Order>> rides = orderRepository.findAllByUserAndEndingIsNotNull(user).stream()
                 .collect(Collectors.groupingBy(Order::getUuid));
         final List<RideDto> ridesDto = processRides(rides);
         return new RidesDto(ridesDto);

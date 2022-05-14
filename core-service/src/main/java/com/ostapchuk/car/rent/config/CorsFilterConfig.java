@@ -19,7 +19,7 @@ public class CorsFilterConfig {
     private final FrontendLinkConfig frontendLinkConfig;
 
     @Bean
-    public FilterRegistrationBean<org.springframework.web.filter.CorsFilter> simpleCorsFilter() {
+    public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);

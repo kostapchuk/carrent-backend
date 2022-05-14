@@ -20,7 +20,7 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public class SenderService {
 
-    @Value("${sender.auth.userName}")
+    @Value("${sender.auth.username}")
     private String authUserName;
 
     @Value("${sender.auth.password}")

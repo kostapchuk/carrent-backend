@@ -100,9 +100,10 @@ public class UserService {
                 .verified(userDto.verified())
                 .build();
         if (userDto.id() != null) {
-            final String password = userRepository.findById(userDto.id()).map(User::getPassword)
+            final User foundUser = userRepository.findById(userDto.id())
                     .orElseThrow(() -> new EntityNotFoundException("Not found"));
-            user.setPassword(password);
+            user.setDocument(foundUser.getDocument());
+            user.setPassword(foundUser.getPassword());
         } else {
             user.setPassword(passwordEncoder.encode(userDto.password()));
         }
