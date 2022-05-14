@@ -15,6 +15,8 @@ import com.ostapchuk.car.rent.exception.UserUnverifiedException;
 import com.ostapchuk.car.rent.mapper.UserMapper;
 import com.ostapchuk.car.rent.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,6 +31,11 @@ import static java.math.BigDecimal.ZERO;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
+    @Value("${spring.kafka.template.email-topic}")
+    private String topic;
+
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -76,6 +83,7 @@ public class UserService {
                 .verified(false)
                 .build();
         userRepository.save(user);
+        kafkaTemplate.send(topic, "");
         return new ResultDto("Successfully created your account, thank you!", true);
     }
 

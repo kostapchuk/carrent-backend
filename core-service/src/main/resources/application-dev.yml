@@ -27,6 +27,9 @@ spring:
     host: ${REDIS_CACHE_HOST:localhost}
   session:
     store-type: mongodb
+  kafka:
+    template:
+      email-topic: emails
 
 management:
   endpoints.web.exposure.include: 'prometheus, health'

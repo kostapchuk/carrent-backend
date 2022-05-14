@@ -13,7 +13,6 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.7'
     implementation 'org.springdoc:springdoc-openapi-security:1.6.7'
     implementation 'io.micrometer:micrometer-registry-prometheus'
-    implementation 'org.springframework.kafka:spring-kafka'
     compileOnly 'org.flywaydb:flyway-core'
     runtimeOnly 'org.postgresql:postgresql'
 }
