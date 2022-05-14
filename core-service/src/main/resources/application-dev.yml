@@ -23,13 +23,17 @@ spring:
   cache:
     type: redis
   redis:
-    port: ${REDIS_CACHE_PORT:6379}
     host: ${REDIS_CACHE_HOST:localhost}
+    port: ${REDIS_CACHE_PORT:6379}
   session:
     store-type: mongodb
   kafka:
     template:
       email-topic: emails
+  data:
+    mongodb:
+      host: ${MONGODB_HOST:localhost}
+      port: ${MONGODB_PORT:27017}
 
 management:
   endpoints.web.exposure.include: 'prometheus, health'

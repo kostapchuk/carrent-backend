@@ -11,11 +11,9 @@ services:
     ports:
       - "5432:5432"
 
-  carrent-backend:
-    build:
-      context: .
-    image: carrent-backend:latest
-    container_name: carrent-backend
+  core-service:
+    image: docker.io/qjnzero/carrent-backend-core-service:latest
+    container_name: core-service
     ports:
       - "8080:8080"
     environment:
@@ -32,6 +30,13 @@ services:
       - PAYPAL_SECRET=${PAYPAL_SECRET}
       - APPLICATION_PORT=${APPLICATION_PORT}
       - SPRING_PROFILES_ACTIVE=${SPRING_PROFILES_ACTIVE}
+      - MONGODB_DATABASE=${MONGODB_DATABASE}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - MONGODB_HOST=${MONGODB_HOST}
+      - MONGODB_PORT=${MONGODB_PORT}
+      - REDIS_CACHE_PORT=${REDIS_CACHE_PORT}
+      - REDIS_CACHE_HOST=${REDIS_CACHE_HOST}
 
   prometheus:
     image: prom/prometheus
