@@ -1,4 +1,4 @@
-create table if not exists document
+create table if not exists "document"
 (
     id         bigint default nextval('user_document_id_seq'::regclass) not null
         constraint user_document_pk
@@ -8,6 +8,6 @@ create table if not exists document
     type       varchar(10)                                              not null
 );
 
-alter table document
+alter table "document"
     owner to postgres;
 
