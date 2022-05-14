@@ -1,6 +1,6 @@
 create table if not exists "document"
 (
-    id         bigint default nextval('user_document_id_seq'::regclass) not null
+    id         bigserial not null
         constraint user_document_pk
             primary key,
     img_link_1 varchar(255),

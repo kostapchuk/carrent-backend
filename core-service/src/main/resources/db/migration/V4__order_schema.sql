@@ -1,6 +1,6 @@
 create table if not exists "order"
 (
-    id      bigint default nextval('rent_id_seq'::regclass) not null
+    id      bigserial not null
         constraint rent_pk
             primary key,
     car_id  integer                                         not null,
