@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
-    private final UserService userService;
+    private final UserReadService userReadService;
     private final JwtTokenProvider jwtTokenProvider;
 
     public AuthenticationResponseDto login(final AuthenticationRequestDto request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        final User user = userService.findByEmail(request.getEmail());
+        final User user = userReadService.findByEmail(request.getEmail());
         final String token = jwtTokenProvider.createToken(request.getEmail(), user.getRole().name());
         return new AuthenticationResponseDto(user.getId(), token, user.getRole().name());
     }

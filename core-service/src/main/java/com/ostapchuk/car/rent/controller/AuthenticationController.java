@@ -25,6 +25,8 @@ public class AuthenticationController {
         return authenticationService.login(request);
     }
 
+//    @PostMapping("/refresh")
+
     @PostMapping("/logout")
     public void logout(final HttpServletRequest request, final HttpServletResponse response) {
         final SecurityContextLogoutHandler securityContextLogoutHandler = new SecurityContextLogoutHandler();

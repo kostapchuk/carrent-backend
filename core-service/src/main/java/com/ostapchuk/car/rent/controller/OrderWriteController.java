@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.controller;
 
 import com.ostapchuk.car.rent.dto.OrderDto;
-import com.ostapchuk.car.rent.service.OrderService;
+import com.ostapchuk.car.rent.service.OrderWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/orders")
 @RequiredArgsConstructor
-public class OrderController {
+public class OrderWriteController {
 
-    private final OrderService orderService;
+    private final OrderWriteService orderWriteService;
 
     @PostMapping
     @PreAuthorize("hasAuthority('users:read')")
     public void save(@RequestBody final OrderDto orderDto) {
-        orderService.process(orderDto);
+        orderWriteService.process(orderDto);
     }
 }

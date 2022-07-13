@@ -17,31 +17,12 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class CarService {
+public class CarReadService {
 
     private final CarRepository carRepository;
     private final OrderRepository orderRepository;
-    private final UserService userService;
+    private final UserReadService userReadService;
     private final CarMapper carMapper;
-
-    public void save(final CarDto carDto) {
-        carRepository.save(carMapper.toEntity(carDto));
-    }
-
-    public void update(final CarDto carDto) {
-        final Integer id = carDto.id();
-        final Car car = findById(id);
-        car.setMark(carDto.mark());
-        car.setModel(carDto.model());
-        car.setBookPricePerHour(carDto.bookPricePerHour());
-        car.setRentPricePerHour(carDto.rentPricePerHour());
-        car.setImgLink(carDto.imgUrl());
-        carRepository.save(car);
-    }
-
-    public void delete(final Integer id) {
-        carRepository.delete(findById(id));
-    }
 
     public CarsDto findAll() {
         final List<CarDto> carsDto = carRepository.findAllByOrderById().stream()
@@ -66,11 +47,12 @@ public class CarService {
         return new CarsDto(carsDto);
     }
 
-//    todo: Fix cache when a user changes car's status
+
+    //    todo: Fix cache when a user changes car's status
 //     @Cacheable(value = "cars")
     public CarsDto findAllAvailableForUser(final Long userId) {
         final List<Car> freeCars = new ArrayList<>();
-        orderRepository.findFirstByUserAndEndingIsNull(userService.findById(userId))
+        orderRepository.findFirstByUserAndEndingIsNull(userReadService.findById(userId))
                 .map(Order::getCar)
                 .ifPresent(freeCars::add);
         freeCars.addAll(carRepository.findAllByStatusOrderById(CarStatus.FREE));

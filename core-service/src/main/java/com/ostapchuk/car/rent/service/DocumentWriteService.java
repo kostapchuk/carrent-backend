@@ -13,15 +13,15 @@ import static com.ostapchuk.car.rent.entity.DocumentType.USER;
 
 @Service
 @RequiredArgsConstructor
-public class DocumentService {
+public class DocumentWriteService {
 
     private final FileService fileService;
-    private final UserService userService;
+    private final UserReadService userReadService;
     private final UserRepository userRepository;
     private final DocumentRepository documentRepository;
 
     public void save(final MultipartFile multipartFile, final UploadRequestDto requestDto) {
-        final User user = userService.findById(requestDto.userId());
+        final User user = userReadService.findById(requestDto.userId());
         fileService.save(multipartFile).thenAccept(r -> r.ifPresent(link -> {
             final Document document = switch (requestDto.imgNumber()) {
                 case 1 -> {

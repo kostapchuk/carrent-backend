@@ -20,20 +20,20 @@ spring:
     driver-class-name: org.postgresql.Driver
   flyway:
     baseline-on-migrate: true
-  cache:
-    type: redis
-  redis:
-    host: ${REDIS_CACHE_HOST:localhost}
-    port: ${REDIS_CACHE_PORT:6379}
-  session:
-    store-type: mongodb
-  kafka:
-    template:
-      email-topic: emails
-  data:
-    mongodb:
-      host: ${MONGODB_HOST:localhost}
-      port: ${MONGODB_PORT:27017}
+#  cache:
+#    type: redis
+#  redis:
+#    host: ${REDIS_CACHE_HOST:localhost}
+#    port: ${REDIS_CACHE_PORT:6379}
+#  session:
+#    store-type: mongodb
+#  kafka:
+#    template:
+#      email-topic: emails
+#  data:
+#    mongodb:
+#      host: ${MONGODB_HOST:localhost}
+#      port: ${MONGODB_PORT:27017}
 
 management:
   endpoints.web.exposure.include: 'prometheus, health'
@@ -55,9 +55,8 @@ logging:
 jwt:
   secret: ${JWT_SECRET}
   header: Authorization
-  expiration: 604800
-  refresh:
-    expiration: 86400000
+  accessTokenExpiration: 120
+  refreshTokenExpiration: 86400
 
 paypal:
   mode: sandbox
@@ -76,4 +75,4 @@ aws:
       name: ${AWS_S3_BUCKET_NAME}
 
 frontend:
-  link: ${FRONTEND_LINK}
+  url: ${FRONTEND_LINK}

@@ -30,14 +30,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html", "/actuator/**").permitAll()
-                .antMatchers("/api/v1/auth/*").permitAll()
-                .antMatchers(GET, "/api/v1/cars").permitAll()
-                .antMatchers(GET, "/api/v1/cars/free").permitAll()
-                .antMatchers(GET, "/api/v1/cars/available/*").permitAll()
-                .antMatchers(GET, "/api/v1/cars/*").permitAll()
-                .antMatchers("/api/v1/users").permitAll()
-                .antMatchers("/api/v1/payments/**").permitAll()
+                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
+                        "/actuator/**", "/api/v1/users", "/api/v1/payments/**", "/api/v1/auth/*").permitAll()
+                .antMatchers(GET, "/api/v1/cars", "/api/v1/cars/*", "/api/v1/cars/free",
+                        "/api/v1/cars/available/*").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
