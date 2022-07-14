@@ -1,4 +1,4 @@
-package com.ostapchuk.car.rent.dto;
+package com.ostapchuk.car.rent.dto.car;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

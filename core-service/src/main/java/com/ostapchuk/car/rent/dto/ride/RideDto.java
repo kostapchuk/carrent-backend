@@ -1,4 +1,4 @@
-package com.ostapchuk.car.rent.dto;
+package com.ostapchuk.car.rent.dto.ride;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

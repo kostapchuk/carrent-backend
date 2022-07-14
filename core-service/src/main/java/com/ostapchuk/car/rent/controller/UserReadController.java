@@ -1,9 +1,9 @@
 package com.ostapchuk.car.rent.controller;
 
-import com.ostapchuk.car.rent.dto.RidesDto;
-import com.ostapchuk.car.rent.dto.RolesDto;
-import com.ostapchuk.car.rent.dto.StatusesDto;
-import com.ostapchuk.car.rent.dto.UsersDto;
+import com.ostapchuk.car.rent.dto.ride.RidesDto;
+import com.ostapchuk.car.rent.dto.user.RolesDto;
+import com.ostapchuk.car.rent.dto.user.StatusesDto;
+import com.ostapchuk.car.rent.dto.user.UsersDto;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import lombok.RequiredArgsConstructor;

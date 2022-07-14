@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.service;
 
-import com.ostapchuk.car.rent.dto.AuthenticationRequestDto;
-import com.ostapchuk.car.rent.dto.AuthenticationResponseDto;
+import com.ostapchuk.car.rent.dto.auth.AuthenticationRequestDto;
+import com.ostapchuk.car.rent.dto.auth.AuthenticationResponseDto;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;

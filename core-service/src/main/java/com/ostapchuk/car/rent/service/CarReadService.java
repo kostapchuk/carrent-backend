@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.service;
 
-import com.ostapchuk.car.rent.dto.CarDto;
-import com.ostapchuk.car.rent.dto.CarsDto;
+import com.ostapchuk.car.rent.dto.car.CarDto;
+import com.ostapchuk.car.rent.dto.car.CarsDto;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;

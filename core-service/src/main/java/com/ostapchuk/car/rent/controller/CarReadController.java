@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.controller;
 
-import com.ostapchuk.car.rent.dto.CarDto;
-import com.ostapchuk.car.rent.dto.CarsDto;
+import com.ostapchuk.car.rent.dto.car.CarDto;
+import com.ostapchuk.car.rent.dto.car.CarsDto;
 import com.ostapchuk.car.rent.service.CarReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

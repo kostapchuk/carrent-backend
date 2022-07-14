@@ -1,9 +1,9 @@
 package com.ostapchuk.car.rent.service;
 
-import com.ostapchuk.car.rent.dto.RolesDto;
-import com.ostapchuk.car.rent.dto.StatusesDto;
-import com.ostapchuk.car.rent.dto.UserDto;
-import com.ostapchuk.car.rent.dto.UsersDto;
+import com.ostapchuk.car.rent.dto.user.RolesDto;
+import com.ostapchuk.car.rent.dto.user.StatusesDto;
+import com.ostapchuk.car.rent.dto.user.UserDto;
+import com.ostapchuk.car.rent.dto.user.UsersDto;
 import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.entity.UserStatus;

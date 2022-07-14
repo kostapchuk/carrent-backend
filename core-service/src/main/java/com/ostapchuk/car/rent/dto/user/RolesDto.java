@@ -1,4 +1,4 @@
-package com.ostapchuk.car.rent.dto;
+package com.ostapchuk.car.rent.dto.user;
 
 import com.ostapchuk.car.rent.entity.Role;
 

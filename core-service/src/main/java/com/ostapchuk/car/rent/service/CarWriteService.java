@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.service;
 
-import com.ostapchuk.car.rent.dto.CarDto;
+import com.ostapchuk.car.rent.dto.car.CarDto;
 import com.ostapchuk.car.rent.mapper.CarMapper;
 import com.ostapchuk.car.rent.repository.CarRepository;
 import lombok.RequiredArgsConstructor;

@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.mapper;
 
-import com.ostapchuk.car.rent.dto.UserDto;
+import com.ostapchuk.car.rent.dto.user.UserDto;
 import com.ostapchuk.car.rent.entity.User;
 import org.springframework.stereotype.Component;
 

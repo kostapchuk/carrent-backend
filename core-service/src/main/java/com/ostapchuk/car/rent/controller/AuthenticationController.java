@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.controller;
 
-import com.ostapchuk.car.rent.dto.AuthenticationRequestDto;
-import com.ostapchuk.car.rent.dto.AuthenticationResponseDto;
+import com.ostapchuk.car.rent.dto.auth.AuthenticationRequestDto;
+import com.ostapchuk.car.rent.dto.auth.AuthenticationResponseDto;
 import com.ostapchuk.car.rent.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;

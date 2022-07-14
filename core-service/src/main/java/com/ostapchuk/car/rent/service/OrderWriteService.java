@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.service;
 
 import com.ostapchuk.car.rent.converter.StatusConverter;
-import com.ostapchuk.car.rent.dto.OrderDto;
+import com.ostapchuk.car.rent.dto.order.OrderDto;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.User;

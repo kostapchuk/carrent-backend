@@ -1,4 +1,4 @@
-package com.ostapchuk.car.rent.dto;
+package com.ostapchuk.car.rent.dto.auth;
 
 import lombok.Data;
 

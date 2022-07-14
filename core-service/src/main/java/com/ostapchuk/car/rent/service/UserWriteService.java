@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.service;
 
-import com.ostapchuk.car.rent.dto.RegisterUserDto;
 import com.ostapchuk.car.rent.dto.ResultDto;
+import com.ostapchuk.car.rent.dto.user.RegisterUserDto;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.repository.UserRepository;

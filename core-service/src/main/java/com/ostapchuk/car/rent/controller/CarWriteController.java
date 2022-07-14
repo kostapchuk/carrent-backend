@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.controller;
 
-import com.ostapchuk.car.rent.dto.CarDto;
+import com.ostapchuk.car.rent.dto.car.CarDto;
 import com.ostapchuk.car.rent.service.CarWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;

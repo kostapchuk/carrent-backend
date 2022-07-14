@@ -1,4 +1,4 @@
-package com.ostapchuk.car.rent.dto;
+package com.ostapchuk.car.rent.dto.user;
 
 public record RegisterUserDto(
         String firstName,
