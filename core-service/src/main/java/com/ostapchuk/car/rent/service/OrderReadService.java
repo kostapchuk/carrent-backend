@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT;
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT_PAUSED;
-import static com.ostapchuk.car.rent.service.UserReadService.ZERO_INT;
+import static com.ostapchuk.car.rent.util.Constant.ZERO_INT;
 import static java.math.BigDecimal.ZERO;
 
 @Service

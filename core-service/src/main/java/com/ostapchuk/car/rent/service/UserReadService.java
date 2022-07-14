@@ -19,13 +19,13 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 
+import static com.ostapchuk.car.rent.util.Constant.ZERO_INT;
 import static java.math.BigDecimal.ZERO;
 
 @Service
 @RequiredArgsConstructor
 public class UserReadService {
 
-    public static final int ZERO_INT = 0;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 

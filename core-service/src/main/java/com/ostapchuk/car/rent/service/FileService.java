@@ -13,17 +13,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+
+import static com.ostapchuk.car.rent.util.Constant.UNDERSCORE;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class FileService {
 
-    public static final String UNDERSCORE = "_";
     private final AmazonS3Client amazonS3;
 
     @Value("${aws.s3.bucket.name}")
@@ -38,10 +40,10 @@ public class FileService {
             final PutObjectRequest putObjectRequest = new PutObjectRequest(s3BucketName, fileName, file);
             amazonS3.putObject(putObjectRequest);
             log.info("Uploading file with name {}", fileName);
-//            Files.delete(file.toPath()); // Remove the file locally created in the project folder
+            Files.delete(file.toPath()); // Remove the file locally created in the project folder
             fileNameOpt = Optional.of(amazonS3.getResourceUrl(s3BucketName, fileName));
-        } catch (final AmazonServiceException e) {
-            log.error("Error {} occurred while uploading file to S3: ", e.getMessage());
+        } catch (final AmazonServiceException | IOException e) {
+            log.error(e.getMessage(), e);
         }
         return CompletableFuture.completedFuture(fileNameOpt);
     }
@@ -51,7 +53,7 @@ public class FileService {
         try (final FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(multipartFile.getBytes());
         } catch (final IOException e) {
-            log.error("Error {} occurred while converting the multipart file: ", e.getMessage());
+            log.error(e.getMessage(), e);
         }
         return file;
     }
