@@ -31,9 +31,8 @@ public class OrderWriteService {
     private final UserReadService userReadService;
     private final StatusConverter statusConverter;
 
-    private final Random random = new Random(); // TODO: 3/17/2022 plusHours(random.nextInt(25) + 1L)
+    private final Random random = new Random(); // TODO
 
-    // command
     @Transactional
     public void process(final OrderDto orderDto) {
         final User user = userReadService.findVerifiedById(orderDto.userId());
@@ -66,19 +65,19 @@ public class OrderWriteService {
     }
 
     private void updateStatus(final OrderDto orderDto, final User user, final Car car) {
-        final Order order = orderReadService.findExistingOrder(user, car, "Could not update order status");
-        order.setEnding(LocalDateTime.now().plusHours(random.nextInt(25) + 1L));
+        final Order order = orderReadService.findExistingOrder(user, car);
+        order.setEnding(LocalDateTime.now().plusHours(random.nextInt(25) + 1L)); // todo
         order.setPrice(orderReadService.calculatePrice(order, car));
         orderRepository.save(order);
         car.setStatus(orderDto.carStatus());
-        createOrderUsingExistingOrder(orderDto, user, car, order);
+        createOrderUsingExistingOrder(orderDto, user, car, order.getUuid());
     }
 
     private void createOrderUsingExistingOrder(final OrderDto orderDto, final User user, final Car car,
-                                               final Order order) {
+                                               final String uuid) {
         final Order newOrder = Order.builder()
                 .user(user)
-                .uuid(order.getUuid())
+                .uuid(uuid)
                 .start(LocalDateTime.now())
                 .car(car)
                 .status(statusConverter.toOrderStatus(orderDto.carStatus()))
@@ -87,7 +86,7 @@ public class OrderWriteService {
     }
 
     private void finishRide(final OrderDto orderDto, final User user, final Car car) {
-        final Order order = orderReadService.findExistingOrder(user, car, "Could not finish the order");
+        final Order order = orderReadService.findExistingOrder(user, car);
         order.setEnding(LocalDateTime.now().plusHours(random.nextInt(25) + 1L));
         order.setPrice(orderReadService.calculatePrice(order, car));
         user.setBalance(user.getBalance().subtract(orderReadService.calculateRidePrice(order, car)));

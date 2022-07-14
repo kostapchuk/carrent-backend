@@ -11,9 +11,7 @@ import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,51 +19,53 @@ import java.util.List;
 import static javax.persistence.EnumType.STRING;
 import static javax.persistence.GenerationType.IDENTITY;
 
-@Entity
+@Builder
 @Getter
 @Setter
+@Entity
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
-@Table(name = "user", schema = "public")
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
-    @Column(name = "first_name", nullable = false)
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name = "last_name", nullable = false)
+    @Column(name = "last_name")
     private String lastName;
 
-    @Column(name = "phone", nullable = false)
+    @Column(name = "phone")
     private String phone;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(name = "email")
     private String email;
 
-    @Column(name = "password", nullable = false)
+    @Column(name = "password")
     private String password;
 
     @Enumerated(STRING)
-    @Column(name = "role", nullable = false)
+    @Column(name = "role")
     private Role role;
 
     @Enumerated(STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private UserStatus status;
 
-    @Column(name = "balance", nullable = false, precision = 7, scale = 2)
+    @Column(name = "balance")
     private BigDecimal balance;
 
-    @Column(name = "verified", nullable = false)
+    @Column(name = "verified")
     private boolean verified;
 
-    @OneToOne
-    @JoinColumn(name = "document_id", referencedColumnName = "id")
-    private Document document;
+    @Column(name = "passport_img_url")
+    private String passportImgUrl;
+
+    @Column(name = "driving_license_img_url")
+    private String drivingLicenseImgUrl;
 
     @OneToMany(mappedBy = "user")
     private List<Order> orders;

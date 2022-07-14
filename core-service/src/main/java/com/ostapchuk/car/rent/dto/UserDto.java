@@ -13,7 +13,7 @@ public record UserDto(
         Boolean verified,
         String role,
         BigDecimal balance,
-        String documentImg1,
-        String documentImg2
+        String passportUrl,
+        String drivingLicenseUrl
 ) {
 }

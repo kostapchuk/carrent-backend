@@ -10,46 +10,43 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 
 import static javax.persistence.EnumType.STRING;
+import static javax.persistence.GenerationType.IDENTITY;
 
-// TODO: 3/17/2022 add documentation for car (license)
-// TODO: 3/17/2022 car number
-
-@Entity
+@Builder
 @Getter
 @Setter
+@Entity
 @NoArgsConstructor
-@Builder
 @AllArgsConstructor
 @Table(name = "car")
 public class Car {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
-    @Column(name = "mark", nullable = false, length = 30)
+    @Column(name = "mark")
     private String mark;
 
-    @Column(name = "model", nullable = false, length = 30)
+    @Column(name = "model")
     private String model;
 
     @Column(name = "img_link")
     private String imgLink;
 
-    @Column(name = "rent_price_per_hour", nullable = false, precision = 5, scale = 2)
+    @Column(name = "rent_price_per_hour")
     private BigDecimal rentPricePerHour;
 
-    @Column(name = "book_price_per_hour", nullable = false, precision = 5, scale = 2)
+    @Column(name = "book_price_per_hour")
     private BigDecimal bookPricePerHour;
 
     @Enumerated(STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status")
     private CarStatus status;
 }

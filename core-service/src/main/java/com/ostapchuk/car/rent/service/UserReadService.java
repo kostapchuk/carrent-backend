@@ -25,13 +25,14 @@ import static java.math.BigDecimal.ZERO;
 @RequiredArgsConstructor
 public class UserReadService {
 
+    public static final int ZERO_INT = 0;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     public User findById(final Long id) {
         final User user = userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Could not find car with id: " + id));
-        verifyUser(user);
+        validateUser(user);
         return user;
     }
 
@@ -66,17 +67,17 @@ public class UserReadService {
 
     public BigDecimal findDept(final Long userId) {
         final BigDecimal total = findById(userId).getBalance();
-        if (total.compareTo(BigDecimal.ZERO) >= 0) {
+        if (total.compareTo(ZERO) >= ZERO_INT) {
             throw new BalanceException("The balance is positive. Nothing to pay");
         }
         return total.negate();
     }
 
-    public void verifyUser(final User user) {
+    public void validateUser(final User user) {
         if (!user.isVerified()) {
             throw new UserUnverifiedException("You are not verified. Please, wait for the verification");
         }
-        if (user.getBalance().compareTo(ZERO) < 0) {
+        if (user.getBalance().compareTo(ZERO) < ZERO_INT) {
             throw new BalanceException("The balance is negative, please, pay the debt");
         }
     }

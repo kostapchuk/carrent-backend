@@ -13,24 +13,26 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class CarWriteController {
 
     private final CarWriteService carWriteService;
 
     @PostMapping("/api/v1/cars")
-    @PreAuthorize("hasAuthority('users:write')")
+//    @PreAuthorize("hasAuthority('users:write')")
     public void save(@RequestBody final CarDto carDto) {
         carWriteService.save(carDto);
     }
 
     @PutMapping("/api/v1/cars")
-    @PreAuthorize("hasAuthority('users:write')")
+//    @PreAuthorize("hasAuthority('users:write')")
     public void update(@RequestBody final CarDto carDto) {
-        carWriteService.update(carDto);
+//        carWriteService.update(carDto);
+        throw new RuntimeException("Not implemented yet");
     }
 
     @DeleteMapping("/api/v1/cars/{id}")
-    @PreAuthorize("hasAuthority('users:delete')")
+//    @PreAuthorize("hasAuthority('users:delete')")
     public void delete(@PathVariable final Integer id) {
         carWriteService.delete(id);
     }

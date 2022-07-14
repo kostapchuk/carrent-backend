@@ -3,7 +3,6 @@ package com.ostapchuk.car.rent.service;
 import com.ostapchuk.car.rent.dto.CarDto;
 import com.ostapchuk.car.rent.dto.CarsDto;
 import com.ostapchuk.car.rent.entity.Car;
-import com.ostapchuk.car.rent.entity.CarStatus;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.mapper.CarMapper;
@@ -14,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.ostapchuk.car.rent.entity.CarStatus.FREE;
 
 @Service
 @RequiredArgsConstructor
@@ -41,21 +42,18 @@ public class CarReadService {
     }
 
     public CarsDto findAllFree() {
-        final List<CarDto> carsDto = carRepository.findAllByStatusOrderById(CarStatus.FREE).stream()
+        final List<CarDto> carsDto = carRepository.findAllByStatusOrderById(FREE).stream()
                 .map(carMapper::toDto)
                 .toList();
         return new CarsDto(carsDto);
     }
 
-
-    //    todo: Fix cache when a user changes car's status
-//     @Cacheable(value = "cars")
-    public CarsDto findAllAvailableForUser(final Long userId) {
+    public CarsDto findAllFreeForUser(final Long userId) {
         final List<Car> freeCars = new ArrayList<>();
         orderRepository.findFirstByUserAndEndingIsNull(userReadService.findById(userId))
                 .map(Order::getCar)
                 .ifPresent(freeCars::add);
-        freeCars.addAll(carRepository.findAllByStatusOrderById(CarStatus.FREE));
+        freeCars.addAll(carRepository.findAllByStatusOrderById(FREE));
         final List<CarDto> carsDto = freeCars.stream()
                 .map(carMapper::toDto)
                 .toList();

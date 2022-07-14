@@ -7,7 +7,7 @@ import com.ostapchuk.car.rent.dto.RidesDto;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.User;
-import com.ostapchuk.car.rent.exception.OrderCreationException;
+import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.repository.OrderRepository;
 import com.ostapchuk.car.rent.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,8 @@ import java.util.stream.Collectors;
 
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT;
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT_PAUSED;
+import static com.ostapchuk.car.rent.service.UserReadService.ZERO_INT;
+import static java.math.BigDecimal.ZERO;
 
 @Service
 @RequiredArgsConstructor
@@ -31,21 +33,20 @@ public class OrderReadService {
     private final UserReadService userReadService;
     private final StatusConverter statusConverter;
 
-    // query
     public RidesDto findAllRidesByUserId(final Long id) {
         final User user = userReadService.findById(id);
-        final Map<String, List<Order>> rides = orderRepository.findAllByUserAndEndingIsNotNull(user).stream()
+        final Map<String, List<Order>> rides = orderRepository.findAllByUserAndEndingIsNotNullOrderByStartAsc(user)
+                .stream()
                 .collect(Collectors.groupingBy(Order::getUuid));
         final List<RideDto> ridesDto = processRides(rides);
         return new RidesDto(ridesDto);
     }
 
-    Order findExistingOrder(final User user, final Car car, final String message) {
+    Order findExistingOrder(final User user, final Car car) {
         return orderRepository.findFirstByUserAndCarAndEndingIsNullAndStatusOrderByStartDesc(user, car,
                         statusConverter.toOrderStatus(car.getStatus()))
-                .orElseThrow(() -> new OrderCreationException(message));
+                .orElseThrow(() -> new EntityNotFoundException("Could not find order"));
     }
-
 
     BigDecimal calculatePrice(final Order order, final Car car) {
         final long hours = DateTimeUtil.retrieveDurationInHours(order.getStart(), order.getEnding());
@@ -70,31 +71,29 @@ public class OrderReadService {
         final List<RideDto> ridesDto = new ArrayList<>();
         for (final Map.Entry<String, List<Order>> entry : rides.entrySet()) {
             final List<RideDetailsDto> rideDetailsDtos = new ArrayList<>();
-            final List<Order> orders = entry.getValue().stream()
-                    .sorted(Comparator.comparing(Order::getStart))
-                    .toList();
-            orders.forEach(order -> rideDetailsDtos.add(new RideDetailsDto(order.getStart(), order.getEnding(),
-                    order.getStatus().toString(), order.getPrice())));
-            final Order order = orders.get(0);
+            entry.getValue()
+                    .forEach(order -> rideDetailsDtos.add(new RideDetailsDto(order.getStart(), order.getEnding(),
+                            order.getStatus().toString(), order.getPrice())));
+            final Order order = entry.getValue().get(ZERO_INT);
             final Car car = order.getCar();
             ridesDto.add(new RideDto(order.getStart().toLocalDate(), car.getMark(), car.getModel(),
-                    retrieveRidePriceByOrders(orders), retrieveRideTimeByOrders(orders), rideDetailsDtos));
+                    retrieveRidePriceByOrders(entry.getValue()), retrieveRideTimeByOrders(entry.getValue()),
+                    rideDetailsDtos));
         }
         return ridesDto.stream()
                 .sorted(Comparator.comparing(RideDto::date).reversed())
                 .toList();
     }
 
-    // TODO: 3/17/2022 try to use reduce
     private int retrieveRideTimeByOrders(final List<Order> orders) {
-        final int[] totalHours = {0};
-        orders.forEach(o -> totalHours[0] += DateTimeUtil.retrieveDurationInHours(o.getStart(), o.getEnding()));
-        return totalHours[0];
+        return orders.stream()
+                .map(o -> DateTimeUtil.retrieveDurationInHours(o.getStart(), o.getEnding()))
+                .reduce(ZERO_INT, Integer::sum);
     }
 
     private BigDecimal retrieveRidePriceByOrders(final List<Order> orders) {
         return orders.stream()
                 .map(Order::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(ZERO, BigDecimal::add);
     }
 }

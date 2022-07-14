@@ -18,8 +18,8 @@ public record UserMapper() {
                 user.isVerified(),
                 user.getRole().toString(),
                 user.getBalance(),
-                user.getDocument() == null ? null : user.getDocument().getImgLink1(),
-                user.getDocument() == null ? null : user.getDocument().getImgLink2()
+                user.getPassportImgUrl(),
+                user.getDrivingLicenseImgUrl()
         );
     }
 }

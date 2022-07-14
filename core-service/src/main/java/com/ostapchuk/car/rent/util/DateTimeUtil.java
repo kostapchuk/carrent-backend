@@ -9,8 +9,8 @@ import java.util.concurrent.TimeUnit;
 @UtilityClass
 public class DateTimeUtil {
 
-    public long retrieveDurationInHours(final LocalDateTime start, final LocalDateTime end) {
+    public int retrieveDurationInHours(final LocalDateTime start, final LocalDateTime end) {
         final Duration duration = Duration.between(start, end);
-        return TimeUnit.SECONDS.toHours(duration.getSeconds());
+        return (int) TimeUnit.SECONDS.toHours(duration.getSeconds());
     }
 }

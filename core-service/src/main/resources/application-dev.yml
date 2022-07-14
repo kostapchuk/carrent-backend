@@ -58,11 +58,6 @@ jwt:
   accessTokenExpiration: 120
   refreshTokenExpiration: 86400
 
-paypal:
-  mode: sandbox
-  clientId: ${PAYPAL_CLIENT_ID}
-  clientSecret: ${PAYPAL_SECRET}
-
 aws:
   access:
     key:

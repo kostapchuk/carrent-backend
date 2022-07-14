@@ -6,13 +6,13 @@ public enum Permission {
     USERS_WRITE("users:write"),
     USERS_DELETE("users:delete");
 
-    private final String permission;
+    private final String name;
 
-    Permission(final String permission) {
-        this.permission = permission;
+    Permission(final String name) {
+        this.name = name;
     }
 
-    public String getPermission() {
-        return permission;
+    public String getName() {
+        return name;
     }
 }
