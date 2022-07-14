@@ -2,8 +2,10 @@ version: "3.9"
 
 services:
   postgres:
-    image: postgres:latest
+    image: postgres:14.2
     container_name: carrent-db-postgres
+    env_file:
+      - .env.local
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -12,8 +14,11 @@ services:
       - "5432:5432"
 
   core-service:
-    image: docker.io/qjnzero/carrent-backend-core-service:latest
+    build:
+      context: core-service/Dockerfile
     container_name: core-service
+    env_file:
+      - .env.local
     ports:
       - "8080:8080"
     environment:
@@ -31,6 +36,9 @@ services:
 
   prometheus:
     image: prom/prometheus
+    container_name: prometheus
+    env_file:
+      - .env.local
     ports:
       - "9090:9090"
     volumes:
@@ -38,42 +46,11 @@ services:
 
   grafana:
     image: grafana/grafana
+    container_name: grafana
+    env_file:
+      - .env.local
     ports:
       - "3000:3000"
     environment:
-      - GF_SECURITY_ADMIN_USER=admin
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-
-  redis:
-    image: "redis:latest"
-    ports:
-      - "6379:6379"
-
-  mongodb:
-    image: mongo:latest
-    container_name: carrent-sessions
-    ports:
-      - "27017:27017"
-
-  zookeeper:
-    container_name: zookeeper
-    image: confluentinc/cp-zookeeper:latest
-    environment:
-      ZOOKEEPER_SERVER_ID: 1
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-
-  kafka:
-    container_name: kafka
-    image: confluentinc/cp-kafka:latest
-    depends_on:
-      - zookeeper
-    ports:
-      - "9092:9092"
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      - GF_SECURITY_ADMIN_USER=${GF_SECURITY_ADMIN_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD}
