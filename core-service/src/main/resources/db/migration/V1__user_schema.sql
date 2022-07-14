@@ -12,7 +12,8 @@ create table if not exists "user"
     balance     numeric(7, 2) default 0.0                         not null,
     verified    boolean       default false                       not null,
     status      varchar(15)   default 'ACTIVE'::character varying not null,
-    document_id integer
+    passport_img_url        varchar(255),
+    driving_license_img_url varchar(255)
 );
 
 alter table "user"
