@@ -1,6 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.6.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "io.freefair.lombok" version "6.5.1"
     id 'java'
 }
 
@@ -18,6 +19,7 @@ subprojects {
 
     apply plugin: 'org.springframework.boot'
     apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'io.freefair.lombok'
     apply plugin: 'java'
 
     repositories {
@@ -37,9 +39,8 @@ subprojects {
     dependencies {
         implementation 'org.springframework.boot:spring-boot-starter-web'
         implementation 'org.springframework.kafka:spring-kafka'
-        compileOnly 'org.projectlombok:lombok'
-        annotationProcessor 'org.projectlombok:lombok'
         testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.13.4'
     }
 
     tasks.named('test') {

@@ -30,15 +30,14 @@ public class UserReadService {
     private final UserMapper userMapper;
 
     public User findById(final Long id) {
-        final User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Could not find car with id: " + id));
+        final User user = findVerifiedById(id);
         validateUser(user);
         return user;
     }
 
     public User findVerifiedById(final Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Could not find car with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Could not find user with id: " + id));
     }
 
     public UsersDto findAll() {

@@ -4,21 +4,23 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@RequiredArgsConstructor
 public class AwsS3Config {
 
     @Value("${aws.access.key.id}")
-    private String accessKeyId;
+    private final String accessKeyId;
 
     @Value("${aws.access.key.secret}")
-    private String accessKeySecret;
+    private final String accessKeySecret;
 
     @Value("${aws.s3.region.name}")
-    private String s3RegionName;
+    private final String s3RegionName;
 
     @Bean
     public AmazonS3Client amazonS3Client() {

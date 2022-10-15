@@ -22,7 +22,7 @@ public class CorsFilterConfig {
     private static final List<String> SINGLETON_STAR = Collections.singletonList("*");
 
     @Value("${frontend.url}")
-    private String frontendUrl;
+    private final String frontendUrl;
 
     @Bean
     public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
