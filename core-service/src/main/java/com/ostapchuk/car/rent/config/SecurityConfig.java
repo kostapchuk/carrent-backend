@@ -15,6 +15,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.springframework.http.HttpMethod.GET;
 
+
+// https://github.com/h1alexbel/realo/blob/main/src/main/java/com/realo/estate/web/security/config/SecurityConfig.java
+
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)

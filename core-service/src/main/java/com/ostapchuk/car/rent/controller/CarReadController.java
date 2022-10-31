@@ -1,29 +1,25 @@
 package com.ostapchuk.car.rent.controller;
 
 import com.ostapchuk.car.rent.dto.car.CarDto;
-import com.ostapchuk.car.rent.dto.car.CarsDto;
 import com.ostapchuk.car.rent.service.CarReadService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequiredArgsConstructor
-public class CarReadController {
-
-    private final CarReadService carReadService;
+public record CarReadController(CarReadService carReadService) {
 
     @GetMapping("/api/v1/cars")
-    public CarsDto findAll() {
+    public List<CarDto> findAll() {
         return carReadService.findAll();
     }
 
     @GetMapping("/api/v1/cars/free")
-    public CarsDto findAllFree(@RequestParam(value = "userId", required = false) final Optional<Long> userId) {
+    public List<CarDto> findAllFree(@RequestParam(value = "userId", required = false) final Optional<Long> userId) {
         if (userId.isPresent()) {
             return carReadService.findAllFreeForUser(userId.get());
         } else {

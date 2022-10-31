@@ -3,12 +3,12 @@ package com.ostapchuk.car.rent.service;
 import com.ostapchuk.car.rent.converter.StatusConverter;
 import com.ostapchuk.car.rent.dto.ride.RideDetailsDto;
 import com.ostapchuk.car.rent.dto.ride.RideDto;
-import com.ostapchuk.car.rent.dto.ride.RidesDto;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.repository.OrderRepository;
+import com.ostapchuk.car.rent.util.Constant;
 import com.ostapchuk.car.rent.util.DateTimeUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT;
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT_PAUSED;
-import static com.ostapchuk.car.rent.util.Constant.ZERO_INT;
 import static java.math.BigDecimal.ZERO;
 
 @Service
@@ -33,13 +32,12 @@ public class OrderReadService {
     private final UserReadService userReadService;
     private final StatusConverter statusConverter;
 
-    public RidesDto findAllRidesByUserId(final Long id) {
+    public List<RideDto> findAllRidesByUserId(final Long id) {
         final User user = userReadService.findById(id);
         final Map<String, List<Order>> rides = orderRepository.findAllByUserAndEndingIsNotNullOrderByStartAsc(user)
                 .stream()
                 .collect(Collectors.groupingBy(Order::getUuid));
-        final List<RideDto> ridesDto = processRides(rides);
-        return new RidesDto(ridesDto);
+        return processRides(rides);
     }
 
     Order findExistingOrder(final User user, final Car car) {
@@ -73,22 +71,26 @@ public class OrderReadService {
             final List<RideDetailsDto> rideDetailsDtos = new ArrayList<>();
             entry.getValue()
                     .forEach(order -> rideDetailsDtos.add(new RideDetailsDto(order.getStart(), order.getEnding(),
-                            order.getStatus().toString(), order.getPrice())));
-            final Order order = entry.getValue().get(ZERO_INT);
+                            order.getStatus()
+                                    .toString(), order.getPrice())));
+            final Order order = entry.getValue()
+                    .get(Constant.ZERO_INT);
             final Car car = order.getCar();
-            ridesDto.add(new RideDto(order.getStart().toLocalDate(), car.getMark(), car.getModel(),
+            ridesDto.add(new RideDto(order.getStart()
+                    .toLocalDate(), car.getMark(), car.getModel(),
                     retrieveRidePriceByOrders(entry.getValue()), retrieveRideTimeByOrders(entry.getValue()),
                     rideDetailsDtos));
         }
         return ridesDto.stream()
-                .sorted(Comparator.comparing(RideDto::date).reversed())
+                .sorted(Comparator.comparing(RideDto::date)
+                        .reversed())
                 .toList();
     }
 
     private int retrieveRideTimeByOrders(final List<Order> orders) {
         return orders.stream()
                 .map(o -> DateTimeUtil.retrieveDurationInHours(o.getStart(), o.getEnding()))
-                .reduce(ZERO_INT, Integer::sum);
+                .reduce(Constant.ZERO_INT, Integer::sum);
     }
 
     private BigDecimal retrieveRidePriceByOrders(final List<Order> orders) {

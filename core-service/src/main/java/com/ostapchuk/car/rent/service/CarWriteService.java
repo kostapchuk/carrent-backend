@@ -3,15 +3,11 @@ package com.ostapchuk.car.rent.service;
 import com.ostapchuk.car.rent.dto.car.CarDto;
 import com.ostapchuk.car.rent.mapper.CarMapper;
 import com.ostapchuk.car.rent.repository.CarRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
-public class CarWriteService {
-
-    private final CarRepository carRepository;
-    private final CarMapper carMapper;
+public record CarWriteService(CarRepository carRepository,
+                              CarMapper carMapper) {
 
     public void save(final CarDto carDto) {
         carRepository.save(carMapper.toEntity(carDto));

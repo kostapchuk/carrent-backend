@@ -1,6 +1,5 @@
 package com.ostapchuk.car.rent.dto.car;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
 public record CarDto(
@@ -11,6 +10,5 @@ public record CarDto(
         BigDecimal bookPricePerHour,
         String imgUrl,
         String carStatus
-) implements Serializable {
-    private static final long serialVersionUID = 1234526077883281623L;
+) {
 }

@@ -97,9 +97,10 @@ public class UserWriteService {
 //    }
 
     private CompletableFuture<ResultDto> updateDocument(final MultipartFile file, final Consumer<String> updateImgUrl) {
-        return fileService.uploadToS3(file).thenApply(url -> {
-            url.ifPresent(updateImgUrl);
-            return new ResultDto("Successfully uploaded the file", TRUE);
-        });
+        return fileService.upload(file)
+                .thenApply(url -> {
+                    url.ifPresent(updateImgUrl);
+                    return new ResultDto("Successfully uploaded the file", TRUE);
+                });
     }
 }
