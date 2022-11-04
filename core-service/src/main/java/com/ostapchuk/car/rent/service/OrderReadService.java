@@ -10,7 +10,6 @@ import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.repository.OrderRepository;
 import com.ostapchuk.car.rent.util.Constant;
 import com.ostapchuk.car.rent.util.DateTimeUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -39,13 +38,13 @@ public record OrderReadService(
         return processRides(rides);
     }
 
-    Order findExistingOrder(final User user, final Car car) {
+    public Order findExistingOrder(final User user, final Car car) {
         return orderRepository.findFirstByUserAndCarAndEndingIsNullAndStatusOrderByStartDesc(user, car,
                         statusConverter.toOrderStatus(car.getStatus()))
                 .orElseThrow(() -> new EntityNotFoundException("Could not find order"));
     }
 
-    BigDecimal calculatePrice(final Order order, final Car car) {
+    public BigDecimal calculatePrice(final Order order, final Car car) {
         final long hours = DateTimeUtil.retrieveDurationInHours(order.getStart(), order.getEnding());
         final BigDecimal hourPrice = switch (order.getStatus()) {
             case BOOKING -> car.getBookPricePerHour();
@@ -54,7 +53,7 @@ public record OrderReadService(
         return hourPrice.multiply(new BigDecimal(hours));
     }
 
-    BigDecimal calculateRidePrice(final Order order, final Car car) {
+    public BigDecimal calculateRidePrice(final Order order, final Car car) {
         final BigDecimal price = calculatePrice(order, car);
         if (RENT.equals(order.getStatus()) || RENT_PAUSED.equals(order.getStatus())) {
             final List<Order> orders = orderRepository.findAllByUuid(order.getUuid());
