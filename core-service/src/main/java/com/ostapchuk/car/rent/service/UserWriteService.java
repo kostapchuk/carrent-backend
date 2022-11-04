@@ -20,12 +20,11 @@ import static java.lang.Boolean.TRUE;
 import static java.math.BigDecimal.ZERO;
 
 @Service
-@RequiredArgsConstructor
-public class UserWriteService {
-
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final FileService fileService;
+public record UserWriteService(
+        UserRepository userRepository,
+        PasswordEncoder passwordEncoder,
+        FileService fileService
+) {
 
     public ResultDto create(final RegisterUserDto userDto) {
         if (userRepository.existsByEmail(userDto.email())) {

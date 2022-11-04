@@ -20,11 +20,10 @@ import java.util.Set;
 import static java.math.BigDecimal.ZERO;
 
 @Service
-@RequiredArgsConstructor
-public class UserReadService {
-
-    private final UserRepository userRepository;
-    private final UserMapper userMapper;
+public record UserReadService(
+        UserRepository userRepository,
+        UserMapper userMapper
+) {
 
     public User findById(final Long id) {
         final User user = findVerifiedById(id);

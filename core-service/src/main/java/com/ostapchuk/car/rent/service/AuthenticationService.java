@@ -9,18 +9,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 @Service
-public record AuthenticationService(AuthenticationManager authenticationManager,
-                                    UserReadService userReadService,
-                                    JwtTokenProvider jwtTokenProvider) {
-
-
+public record AuthenticationService(
+        AuthenticationManager authenticationManager,
+        UserReadService userReadService,
+        JwtTokenProvider jwtTokenProvider
+) {
     public AuthenticationResponseDto login(final AuthenticationRequestDto request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+                new UsernamePasswordAuthenticationToken(request.email(), request.password())
+        );
         final User user = userReadService.findByEmail(request.email());
-        final String token = jwtTokenProvider.createToken(request.email(), user.getRole()
-                .name());
-        return new AuthenticationResponseDto(user.getId(), token, user.getRole()
-                .name());
+        final String token = jwtTokenProvider.createToken(request.email(), user.getRole().name());
+        return new AuthenticationResponseDto(user.getId(), token, user.getRole().name());
     }
 }

@@ -6,8 +6,10 @@ import com.ostapchuk.car.rent.repository.CarRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public record CarWriteService(CarRepository carRepository,
-                              CarMapper carMapper) {
+public record CarWriteService(
+        CarRepository carRepository,
+        CarMapper carMapper
+) {
 
     public void save(final CarDto carDto) {
         carRepository.save(carMapper.toEntity(carDto));

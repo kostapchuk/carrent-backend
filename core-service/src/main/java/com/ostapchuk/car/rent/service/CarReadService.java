@@ -15,11 +15,12 @@ import java.util.List;
 import static com.ostapchuk.car.rent.entity.CarStatus.FREE;
 
 @Service
-public record CarReadService(CarRepository carRepository,
-                             OrderRepository orderRepository,
-                             UserReadService userReadService,
-                             CarMapper carMapper) {
-
+public record CarReadService(
+        CarRepository carRepository,
+        OrderRepository orderRepository,
+        UserReadService userReadService,
+        CarMapper carMapper
+) {
     public List<CarDto> findAll() {
         return carRepository.findAllByOrderById()
                 .stream()

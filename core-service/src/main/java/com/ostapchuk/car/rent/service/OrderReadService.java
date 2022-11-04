@@ -25,12 +25,11 @@ import static com.ostapchuk.car.rent.entity.OrderStatus.RENT_PAUSED;
 import static java.math.BigDecimal.ZERO;
 
 @Service
-@RequiredArgsConstructor
-public class OrderReadService {
-
-    private final OrderRepository orderRepository;
-    private final UserReadService userReadService;
-    private final StatusConverter statusConverter;
+public record OrderReadService(
+        OrderRepository orderRepository,
+        UserReadService userReadService,
+        StatusConverter statusConverter
+) {
 
     public List<RideDto> findAllRidesByUserId(final Long id) {
         final User user = userReadService.findById(id);
