@@ -41,7 +41,7 @@ public record OrderReadService(
         return processRides(rides);
     }
 
-    public Order complete(final OrderDto orderDto, final Car car) {
+    public void complete(final OrderDto orderDto, final Car car) {
         final User user = userReadService.findVerifiedById(orderDto.userId());
         final Order order = orderRepository.findFirstByUserAndCarAndEndingIsNullAndStatusOrderByStartDesc(user, car,
                         statusConverter.toOrderStatus(car.getStatus()))
@@ -50,7 +50,7 @@ public record OrderReadService(
         user.setBalance(user.getBalance().subtract(calculateRidePrice(order, car)));
         order.setPrice(calculatePrice(order, car));
         car.setStatus(orderDto.carStatus());
-        return orderRepository.save(order);
+        orderRepository.save(order);
     }
 
     public Order findExistingOrder(final User user, final Car car) {

@@ -37,13 +37,8 @@ public class CorsFilterConfig {
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(TRUE);
         config.setAllowedOrigins(List.of("https://www.sandbox.paypal.com", frontendUrl));
-        config.setAllowedMethods(SINGLETON_STAR);
-        config.setAllowedHeaders(SINGLETON_STAR);
-//        corsConfiguration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type"));
-//        corsConfiguration.setAllowedOrigins(List.of("*"));
-//        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PUT","OPTIONS","PATCH", "DELETE"));
-//        corsConfiguration.setAllowCredentials(true);
-//        corsConfiguration.setExposedHeaders(List.of("Authorization"));
+        config.setAllowedMethods(SINGLETON_STAR); // TODO: 04.11.2022  
+        config.setAllowedHeaders(SINGLETON_STAR); // TODO: 04.11.2022  
         return config;
     }
 }
