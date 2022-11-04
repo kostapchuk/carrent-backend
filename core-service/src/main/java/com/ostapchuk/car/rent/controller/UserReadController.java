@@ -37,7 +37,7 @@ public class UserReadController {
     }
 
     @GetMapping("/api/v1/users")
-    @PreAuthorize("hasAuthority('users:write')")
+//    @PreAuthorize("hasAuthority('users:write')")
     public List<UserDto> findAll() {
         return userReadService.findAll();
     }
