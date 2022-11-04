@@ -27,7 +27,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "\"order\"")
+@Table(name = "order")
 public class Order {
 
     @Id
@@ -43,8 +43,8 @@ public class Order {
     private Car car;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "person_id")
-    private Person person;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @Column(name = "start")
     private LocalDateTime start;

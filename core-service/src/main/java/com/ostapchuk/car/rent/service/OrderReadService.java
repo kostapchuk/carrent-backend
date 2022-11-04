@@ -6,7 +6,7 @@ import com.ostapchuk.car.rent.dto.ride.RideDetailsDto;
 import com.ostapchuk.car.rent.dto.ride.RideDto;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
-import com.ostapchuk.car.rent.entity.Person;
+import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.repository.OrderRepository;
 import com.ostapchuk.car.rent.util.Constant;
@@ -34,27 +34,27 @@ public record OrderReadService(
 ) {
 
     public List<RideDto> findAllRidesByUserId(final Long id) {
-        final Person person = userReadService.findById(id);
-        final Map<String, List<Order>> rides = orderRepository.findAllByPersonAndEndingIsNotNullOrderByStartAsc(person)
+        final User user = userReadService.findById(id);
+        final Map<String, List<Order>> rides = orderRepository.findAllByUserAndEndingIsNotNullOrderByStartAsc(user)
                 .stream()
                 .collect(Collectors.groupingBy(Order::getUuid));
         return processRides(rides);
     }
 
     public Order complete(final OrderDto orderDto, final Car car) {
-        final Person person = userReadService.findVerifiedById(orderDto.userId());
-        final Order order = orderRepository.findFirstByPersonAndCarAndEndingIsNullAndStatusOrderByStartDesc(person, car,
+        final User user = userReadService.findVerifiedById(orderDto.userId());
+        final Order order = orderRepository.findFirstByUserAndCarAndEndingIsNullAndStatusOrderByStartDesc(user, car,
                         statusConverter.toOrderStatus(car.getStatus()))
                 .orElseThrow(() -> new EntityNotFoundException("Could not find order"));
         order.setEnding(LocalDateTime.now());
-        person.setBalance(person.getBalance().subtract(calculateRidePrice(order, car)));
+        user.setBalance(user.getBalance().subtract(calculateRidePrice(order, car)));
         order.setPrice(calculatePrice(order, car));
         car.setStatus(orderDto.carStatus());
         return orderRepository.save(order);
     }
 
-    public Order findExistingOrder(final Person person, final Car car) {
-        return orderRepository.findFirstByPersonAndCarAndEndingIsNullAndStatusOrderByStartDesc(person, car,
+    public Order findExistingOrder(final User user, final Car car) {
+        return orderRepository.findFirstByUserAndCarAndEndingIsNullAndStatusOrderByStartDesc(user, car,
                         statusConverter.toOrderStatus(car.getStatus()))
                 .orElseThrow(() -> new EntityNotFoundException("Could not find order"));
     }

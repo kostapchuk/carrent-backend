@@ -25,8 +25,10 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "person")
-public class Person {
+@Table(name = User.USER)
+public class User {
+
+    public static final String USER = "user";
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -67,6 +69,6 @@ public class Person {
     @Column(name = "driving_license_img_url")
     private String drivingLicenseImgUrl;
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = USER)
     private List<Order> orders;
 }

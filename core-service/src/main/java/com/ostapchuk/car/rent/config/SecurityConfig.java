@@ -14,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 
 // https://github.com/h1alexbel/realo/blob/main/src/main/java/com/realo/estate/web/security/config/SecurityConfig.java
@@ -38,6 +39,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/actuator/**", "/api/v1/payments/**", "/api/v1/auth/*").permitAll()
                 .antMatchers(GET, "/api/v1/cars", "/api/v1/cars/*", "/api/v1/cars/free",
                         "/api/v1/cars/available/*").permitAll()
+                .antMatchers(POST, "/api/v1/users").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

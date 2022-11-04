@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.security;
 
-import com.ostapchuk.car.rent.entity.Person;
+import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.entity.UserStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +18,14 @@ public class SecurityUser implements UserDetails {
     private final List<SimpleGrantedAuthority> authorities;
     private final boolean isActive;
 
-    public static UserDetails fromUser(final Person person) {
+    public static UserDetails fromUser(final User user) {
         return new org.springframework.security.core.userdetails.User(
-                person.getEmail(), person.getPassword(),
-                person.getStatus().equals(UserStatus.ACTIVE),
-                person.getStatus().equals(UserStatus.ACTIVE),
-                person.getStatus().equals(UserStatus.ACTIVE),
-                person.getStatus().equals(UserStatus.ACTIVE),
-                person.getRole().getAuthorities()
+                user.getEmail(), user.getPassword(),
+                user.getStatus().equals(UserStatus.ACTIVE),
+                user.getStatus().equals(UserStatus.ACTIVE),
+                user.getStatus().equals(UserStatus.ACTIVE),
+                user.getStatus().equals(UserStatus.ACTIVE),
+                user.getRole().getAuthorities()
         );
     }
 

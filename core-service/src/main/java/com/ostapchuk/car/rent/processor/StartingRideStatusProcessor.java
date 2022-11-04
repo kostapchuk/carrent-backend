@@ -4,7 +4,7 @@ import com.ostapchuk.car.rent.converter.StatusConverter;
 import com.ostapchuk.car.rent.dto.order.OrderDto;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
-import com.ostapchuk.car.rent.entity.Person;
+import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.exception.OrderCreationException;
 import com.ostapchuk.car.rent.repository.OrderRepository;
 import com.ostapchuk.car.rent.service.CarReadService;
@@ -41,14 +41,14 @@ public class StartingRideStatusProcessor extends RideStatusProcessor {
     }
 
     private void startRide(final OrderDto orderDto, final Car car) {
-        final Person person = userReadService.findVerifiedById(orderDto.userId());
-        if (orderRepository.existsByPersonAndEndingIsNull(person)) {
+        final User user = userReadService.findVerifiedById(orderDto.userId());
+        if (orderRepository.existsByUserAndEndingIsNull(user)) {
             throw new OrderCreationException("Cannot start ride");
         }
         car.setStatus(orderDto.carStatus());
         final Order order =
                 Order.builder()
-                        .person(person)
+                        .user(user)
                         .uuid(UUID.randomUUID().toString())
                         .start(LocalDateTime.now())
                         .car(car)

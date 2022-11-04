@@ -4,7 +4,7 @@ import com.ostapchuk.car.rent.converter.StatusConverter;
 import com.ostapchuk.car.rent.dto.order.OrderDto;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
-import com.ostapchuk.car.rent.entity.Person;
+import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.repository.OrderRepository;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
@@ -39,13 +39,13 @@ class UpdatingRideStatusProcessor extends RideStatusProcessor {
     }
 
     private void updateRide(final OrderDto orderDto, final Car car) {
-        final Person person = userReadService.findVerifiedById(orderDto.userId());
-        final Order order = orderReadService.findExistingOrder(person, car);
+        final User user = userReadService.findVerifiedById(orderDto.userId());
+        final Order order = orderReadService.findExistingOrder(user, car);
         order.setEnding(LocalDateTime.now());
         order.setPrice(orderReadService.calculatePrice(order, car));
         orderRepository.save(order);
         car.setStatus(orderDto.carStatus());
-        final Order newOrder = Order.builder().person(person).uuid(order.getUuid()).start(LocalDateTime.now()).car(car)
+        final Order newOrder = Order.builder().user(user).uuid(order.getUuid()).start(LocalDateTime.now()).car(car)
                 .status(statusConverter.toOrderStatus(orderDto.carStatus())).build();
         orderRepository.save(newOrder);
     }

@@ -2,7 +2,7 @@ package com.ostapchuk.car.rent.service;
 
 import com.ostapchuk.car.rent.dto.ResultDto;
 import com.ostapchuk.car.rent.dto.user.RegisterUserDto;
-import com.ostapchuk.car.rent.entity.Person;
+import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.repository.UserRepository;
 import com.ostapchuk.car.rent.service.file.FileService;
@@ -30,8 +30,8 @@ public record UserWriteService(
         if (userRepository.existsByEmail(userDto.email())) {
             throw new EntityNotFoundException("User already exists");
         }
-        final Person person = createUserFromDto(userDto);
-        userRepository.save(person);
+        final User user = createUserFromDto(userDto);
+        userRepository.save(user);
         return new ResultDto("Successfully created your account, thank you!", TRUE);
     }
 
@@ -51,8 +51,8 @@ public record UserWriteService(
         return updateDocument(file, url -> userRepository.updateDrivingLicenseUrl(userId, url));
     }
 
-    private Person createUserFromDto(final RegisterUserDto userDto) {
-        return Person.builder()
+    private User createUserFromDto(final RegisterUserDto userDto) {
+        return User.builder()
                 .firstName(userDto.firstName())
                 .lastName(userDto.lastName())
                 .email(userDto.email())

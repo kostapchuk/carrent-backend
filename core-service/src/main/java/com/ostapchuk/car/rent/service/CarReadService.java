@@ -68,7 +68,7 @@ public record CarReadService(
 
     public List<CarDto> findAllFreeForUser(final Long userId) {
         final List<Car> freeCars = new ArrayList<>();
-        orderRepository.findFirstByPersonAndEndingIsNull(userReadService.findById(userId))
+        orderRepository.findFirstByUserAndEndingIsNull(userReadService.findById(userId))
                 .map(Order::getCar)
                 .ifPresent(freeCars::add);
         freeCars.addAll(carRepository.findAllByStatusOrderById(FREE));
