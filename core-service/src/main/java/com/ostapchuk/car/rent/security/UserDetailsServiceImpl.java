@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.security;
 
-import com.ostapchuk.car.rent.entity.User;
+import com.ostapchuk.car.rent.entity.Person;
 import com.ostapchuk.car.rent.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -18,8 +18,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
-        final User user = userRepository.findByEmail(email).orElseThrow(() ->
+        final Person person = userRepository.findByEmail(email).orElseThrow(() ->
                 new UsernameNotFoundException("User does not exist"));
-        return SecurityUser.fromUser(user);
+        return SecurityUser.fromUser(person);
     }
 }

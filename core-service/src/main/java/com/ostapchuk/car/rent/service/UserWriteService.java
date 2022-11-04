@@ -2,10 +2,10 @@ package com.ostapchuk.car.rent.service;
 
 import com.ostapchuk.car.rent.dto.ResultDto;
 import com.ostapchuk.car.rent.dto.user.RegisterUserDto;
-import com.ostapchuk.car.rent.entity.User;
+import com.ostapchuk.car.rent.entity.Person;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.repository.UserRepository;
-import lombok.RequiredArgsConstructor;
+import com.ostapchuk.car.rent.service.file.FileService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,8 +30,8 @@ public record UserWriteService(
         if (userRepository.existsByEmail(userDto.email())) {
             throw new EntityNotFoundException("User already exists");
         }
-        final User user = createUserFromDto(userDto);
-        userRepository.save(user);
+        final Person person = createUserFromDto(userDto);
+        userRepository.save(person);
         return new ResultDto("Successfully created your account, thank you!", TRUE);
     }
 
@@ -51,8 +51,8 @@ public record UserWriteService(
         return updateDocument(file, url -> userRepository.updateDrivingLicenseUrl(userId, url));
     }
 
-    private User createUserFromDto(final RegisterUserDto userDto) {
-        return User.builder()
+    private Person createUserFromDto(final RegisterUserDto userDto) {
+        return Person.builder()
                 .firstName(userDto.firstName())
                 .lastName(userDto.lastName())
                 .email(userDto.email())
@@ -64,36 +64,6 @@ public record UserWriteService(
                 .verified(FALSE)
                 .build();
     }
-
-//    public ResultDto update(final UserDto userDto) {
-//        final User foundUser = userRepository.findById(userDto.id())
-//                .orElseThrow(() -> new EntityNotFoundException("Not found"));
-//        foundUser.setFirstName(userDto.firstName());
-//        foundUser.setLastName(userDto.lastName());
-//        foundUser.setEmail(userDto.email());
-//        foundUser.setPhone(userDto.phone());
-//        foundUser.setRole(Role.valueOf(userDto.role()));
-//        final User user = User.builder()
-//                .id(userDto.id())
-//                .firstName(userDto.firstName())
-//                .lastName(userDto.lastName())
-//                .email(userDto.email())
-//                .phone(userDto.phone())
-//                .role(Role.valueOf(userDto.role()))
-//                .status(UserStatus.valueOf(userDto.status()))
-//                .balance(userDto.balance())
-//                .verified(userDto.verified())
-//                .build();
-//        if (userDto.id() != null) {
-//
-//            user.setDocument(foundUser.getDocument());
-//            user.setPassword(foundUser.getPassword());
-//        } else {
-//            user.setPassword(passwordEncoder.encode(userDto.password()));
-//        }
-//        userRepository.save(user);
-//        return new ResultDto("Successfully created your account, thank you!", true);
-//    }
 
     private CompletableFuture<ResultDto> updateDocument(final MultipartFile file, final Consumer<String> updateImgUrl) {
         return fileService.upload(file)

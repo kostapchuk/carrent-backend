@@ -1,4 +1,4 @@
-package com.ostapchuk.car.rent.service;
+package com.ostapchuk.car.rent.service.file;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.multipart.MultipartFile;

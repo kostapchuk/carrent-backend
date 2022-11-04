@@ -6,7 +6,7 @@ import com.ostapchuk.car.rent.dto.ride.RideDetailsDto;
 import com.ostapchuk.car.rent.dto.ride.RideDto;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
-import com.ostapchuk.car.rent.entity.User;
+import com.ostapchuk.car.rent.entity.Person;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.repository.OrderRepository;
 import com.ostapchuk.car.rent.util.Constant;
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.ostapchuk.car.rent.entity.OrderStatus.RENT;
@@ -33,27 +34,27 @@ public record OrderReadService(
 ) {
 
     public List<RideDto> findAllRidesByUserId(final Long id) {
-        final User user = userReadService.findById(id);
-        final Map<String, List<Order>> rides = orderRepository.findAllByUserAndEndingIsNotNullOrderByStartAsc(user)
+        final Person person = userReadService.findById(id);
+        final Map<String, List<Order>> rides = orderRepository.findAllByPersonAndEndingIsNotNullOrderByStartAsc(person)
                 .stream()
                 .collect(Collectors.groupingBy(Order::getUuid));
         return processRides(rides);
     }
 
     public Order complete(final OrderDto orderDto, final Car car) {
-        final User user = userReadService.findVerifiedById(orderDto.userId());
-        final Order order = orderRepository.findFirstByUserAndCarAndEndingIsNullAndStatusOrderByStartDesc(user, car,
+        final Person person = userReadService.findVerifiedById(orderDto.userId());
+        final Order order = orderRepository.findFirstByPersonAndCarAndEndingIsNullAndStatusOrderByStartDesc(person, car,
                         statusConverter.toOrderStatus(car.getStatus()))
                 .orElseThrow(() -> new EntityNotFoundException("Could not find order"));
-        user.setBalance(user.getBalance().subtract(calculateRidePrice(order, car)));
         order.setEnding(LocalDateTime.now());
+        person.setBalance(person.getBalance().subtract(calculateRidePrice(order, car)));
         order.setPrice(calculatePrice(order, car));
         car.setStatus(orderDto.carStatus());
         return orderRepository.save(order);
     }
 
-    public Order findExistingOrder(final User user, final Car car) {
-        return orderRepository.findFirstByUserAndCarAndEndingIsNullAndStatusOrderByStartDesc(user, car,
+    public Order findExistingOrder(final Person person, final Car car) {
+        return orderRepository.findFirstByPersonAndCarAndEndingIsNullAndStatusOrderByStartDesc(person, car,
                         statusConverter.toOrderStatus(car.getStatus()))
                 .orElseThrow(() -> new EntityNotFoundException("Could not find order"));
     }
@@ -108,6 +109,7 @@ public record OrderReadService(
     private BigDecimal retrieveRidePriceByOrders(final List<Order> orders) {
         return orders.stream()
                 .map(Order::getPrice)
+                .filter(Objects::nonNull)
                 .reduce(ZERO, BigDecimal::add);
     }
 }

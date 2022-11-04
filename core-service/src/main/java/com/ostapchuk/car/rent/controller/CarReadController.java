@@ -13,11 +13,6 @@ import java.util.Optional;
 @RestController
 public record CarReadController(CarReadService carReadService) {
 
-    @GetMapping("/api/v1/cars")
-    public List<CarDto> findAll() {
-        return carReadService.findAll();
-    }
-
     @GetMapping("/api/v1/cars/free")
     public List<CarDto> findAllFree(@RequestParam(value = "userId", required = false) final Optional<Long> userId) {
         if (userId.isPresent()) {
@@ -28,7 +23,6 @@ public record CarReadController(CarReadService carReadService) {
     }
 
     @GetMapping("/api/v1/cars/{id}")
-//    @PreAuthorize("hasAuthority('users:read')")
     public CarDto findById(@PathVariable final Integer id) {
         return carReadService.findDtoById(id);
     }

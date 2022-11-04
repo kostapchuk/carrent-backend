@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
@@ -28,7 +27,7 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "order")
+@Table(name = "\"order\"")
 public class Order {
 
     @Id
@@ -39,13 +38,13 @@ public class Order {
     @Column(name = "uuid")
     private String uuid;
 
-    @ManyToOne(fetch = LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "car_id")
     private Car car;
 
     @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "person_id")
+    private Person person;
 
     @Column(name = "start")
     private LocalDateTime start;

@@ -8,7 +8,5 @@ import java.util.List;
 
 public interface CarRepository extends CrudRepository<Car, Integer> {
 
-    List<Car> findAllByOrderById();
-
     List<Car> findAllByStatusOrderById(CarStatus carStatus);
 }

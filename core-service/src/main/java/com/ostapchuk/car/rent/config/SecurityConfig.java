@@ -31,11 +31,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(final HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.ALWAYS) // wtf?? stateless??
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
                 .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
-                        "/actuator/**", "/api/v1/users", "/api/v1/payments/**", "/api/v1/auth/*").permitAll()
+                        "/actuator/**", "/api/v1/payments/**", "/api/v1/auth/*").permitAll()
                 .antMatchers(GET, "/api/v1/cars", "/api/v1/cars/*", "/api/v1/cars/free",
                         "/api/v1/cars/available/*").permitAll()
                 .anyRequest()

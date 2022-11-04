@@ -2,7 +2,7 @@ package com.ostapchuk.car.rent.service;
 
 import com.ostapchuk.car.rent.dto.user.UserDto;
 import com.ostapchuk.car.rent.entity.Role;
-import com.ostapchuk.car.rent.entity.User;
+import com.ostapchuk.car.rent.entity.Person;
 import com.ostapchuk.car.rent.entity.UserStatus;
 import com.ostapchuk.car.rent.exception.BalanceException;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
@@ -24,13 +24,13 @@ public record UserReadService(
         UserMapper userMapper
 ) {
 
-    public User findById(final Long id) {
-        final User user = findVerifiedById(id);
-        validateUser(user);
-        return user;
+    public Person findById(final Long id) {
+        final Person person = findVerifiedById(id);
+        validateUser(person);
+        return person;
     }
 
-    public User findVerifiedById(final Long id) {
+    public Person findVerifiedById(final Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("The user with id " + id + " is not verified yet"));
     }
@@ -42,14 +42,14 @@ public record UserReadService(
                 .toList();
     }
 
-    public User findByEmail(final String email) {
+    public Person findByEmail(final String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new EntityNotFoundException("User does not exist"));
     }
 
     public BigDecimal findBalanceById(final Long id) {
         return userRepository.findById(id)
-                .map(User::getBalance)
+                .map(Person::getBalance)
                 .orElseThrow(() -> new EntityNotFoundException("User does not exist"));
     }
 
@@ -69,13 +69,14 @@ public record UserReadService(
         return total.negate();
     }
 
-    public void validateUser(final User user) {
-        if (!user.isVerified()) {
+    public void validateUser(final Person person) {
+        if (!person.isVerified()) {
             throw new UserUnverifiedException("You are not verified. Please, wait for the verification");
         }
-        if (user.getBalance()
-                .compareTo(ZERO) < Constant.ZERO_INT) {
-            throw new BalanceException("The balance is negative, please, pay the debt");
-        }
+        // todo: enable this only when user tries to change car's status
+//        if (person.getBalance()
+//                .compareTo(ZERO) < Constant.ZERO_INT) {
+//            throw new BalanceException("The balance is negative, please, pay the debt");
+//        }
     }
 }

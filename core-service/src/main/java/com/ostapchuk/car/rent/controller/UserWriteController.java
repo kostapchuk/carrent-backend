@@ -4,6 +4,7 @@ import com.ostapchuk.car.rent.dto.ResultDto;
 import com.ostapchuk.car.rent.dto.user.RegisterUserDto;
 import com.ostapchuk.car.rent.dto.user.UserDto;
 import com.ostapchuk.car.rent.service.UserWriteService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -18,7 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.concurrent.CompletableFuture;
 
 @RestController
-public record UserWriteController(UserWriteService userWriteService) {
+@RequiredArgsConstructor
+public class UserWriteController {
+    private final UserWriteService userWriteService;
 
     @PostMapping("/api/v1/users")
     public ResultDto register(@RequestBody final RegisterUserDto userDto) {
