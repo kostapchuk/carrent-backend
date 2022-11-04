@@ -14,11 +14,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static com.ostapchuk.car.rent.entity.CarStatus.FREE;
-import static com.ostapchuk.car.rent.entity.CarStatus.IN_BOOKING;
-import static com.ostapchuk.car.rent.entity.CarStatus.IN_RENT;
 
 @Component
 public class StartingRideStatusProcessor extends RideStatusProcessor {
@@ -34,35 +29,24 @@ public class StartingRideStatusProcessor extends RideStatusProcessor {
 
     @Override
     public void process(final OrderDto orderDto) {
-        if (isStartRide(orderDto)) {
-            startRide(orderDto);
-        }
+        final Car car = carReadService.findStartable(orderDto.carId(), orderDto.carStatus());
+        startRide(orderDto, car);
     }
 
-    private boolean isStartRide(final OrderDto orderDto) {
-        final Car car = carReadService.findById(orderDto.carId());
-        return FREE.equals(car.getStatus()) && (IN_BOOKING.equals(orderDto.carStatus())|| IN_RENT.equals(
-                orderDto.carStatus()));
-    }
-
-    private void startRide(final OrderDto orderDto) {
+    private void startRide(final OrderDto orderDto, final Car car) {
         final User user = userReadService.findVerifiedById(orderDto.userId());
-        final Car car = carReadService.findById(orderDto.carId());
-        final AtomicBoolean theSameCar = new AtomicBoolean(true);
-        orderRepository.findFirstByUserAndEndingIsNull(user).map(Order::getCar).map(Car::getId)
-                .ifPresent(id -> theSameCar.set(id.equals(car.getId())));
-        if (!theSameCar.get()) {
-            throw new OrderCreationException("Could not create another order");
+        if (orderRepository.existsByUserAndEndingIsNull(user)) {
+            throw new OrderCreationException("Cannot start ride");
         }
         car.setStatus(orderDto.carStatus());
-        createOrder(orderDto, user, car);
-    }
-
-    private void createOrder(final OrderDto orderDto, final User user, final Car car) {
         final Order order =
-                Order.builder().user(user).uuid(UUID.randomUUID().toString()).start(LocalDateTime.now()).car(car)
-                        .status(statusConverter.toOrderStatus(orderDto.carStatus())).build();
+                Order.builder()
+                        .user(user)
+                        .uuid(UUID.randomUUID().toString())
+                        .start(LocalDateTime.now())
+                        .car(car)
+                        .status(statusConverter.toOrderStatus(orderDto.carStatus()))
+                        .build();
         orderRepository.save(order);
     }
-
 }

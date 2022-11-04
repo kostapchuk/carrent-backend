@@ -12,16 +12,10 @@ import com.ostapchuk.car.rent.service.UserReadService;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.Random;
-
-import static com.ostapchuk.car.rent.entity.CarStatus.IN_BOOKING;
-import static com.ostapchuk.car.rent.entity.CarStatus.IN_RENT;
-import static com.ostapchuk.car.rent.entity.CarStatus.IN_RENT_PAUSED;
 
 @Component
 public class UpdatingRideStatusProcessor extends RideStatusProcessor {
 
-    private final Random random = new Random(); // TODO
     private final StatusConverter statusConverter;
 
     public UpdatingRideStatusProcessor(final OrderRepository orderRepository, final OrderReadService orderReadService,
@@ -33,32 +27,18 @@ public class UpdatingRideStatusProcessor extends RideStatusProcessor {
 
     @Override
     public void process(final OrderDto orderDto) {
-        if (isUpdateRide(orderDto)) {
-            updateStatus(orderDto);
-        }
+        final Car car = carReadService.findUpdatable(orderDto.carId(), orderDto.carStatus());
+        updateRide(orderDto, car);
     }
 
-    private boolean isUpdateRide(final OrderDto orderDto) {
-        final Car car = carReadService.findById(orderDto.carId());
-        return (IN_BOOKING.equals(car.getStatus()) && IN_RENT.equals(orderDto.carStatus())) || (IN_RENT.equals(
-                car.getStatus()) && IN_RENT_PAUSED.equals(orderDto.carStatus())) || (IN_RENT_PAUSED.equals(
-                car.getStatus()) && IN_RENT.equals(orderDto.carStatus()));
-    }
-
-    private void updateStatus(final OrderDto orderDto) {
+    private void updateRide(final OrderDto orderDto, final Car car) {
         final User user = userReadService.findVerifiedById(orderDto.userId());
-        final Car car = carReadService.findById(orderDto.carId());
         final Order order = orderReadService.findExistingOrder(user, car);
-        order.setEnding(LocalDateTime.now().plusHours(random.nextInt(25) + 1L)); // todo
+        order.setEnding(LocalDateTime.now());
         order.setPrice(orderReadService.calculatePrice(order, car));
         orderRepository.save(order);
         car.setStatus(orderDto.carStatus());
-        createOrderUsingExistingOrder(orderDto, user, car, order.getUuid());
-    }
-
-    private void createOrderUsingExistingOrder(final OrderDto orderDto, final User user, final Car car,
-                                               final String uuid) {
-        final Order newOrder = Order.builder().user(user).uuid(uuid).start(LocalDateTime.now()).car(car)
+        final Order newOrder = Order.builder().user(user).uuid(order.getUuid()).start(LocalDateTime.now()).car(car)
                 .status(statusConverter.toOrderStatus(orderDto.carStatus())).build();
         orderRepository.save(newOrder);
     }

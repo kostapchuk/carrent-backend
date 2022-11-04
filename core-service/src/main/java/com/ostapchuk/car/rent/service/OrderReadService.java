@@ -1,6 +1,7 @@
 package com.ostapchuk.car.rent.service;
 
 import com.ostapchuk.car.rent.converter.StatusConverter;
+import com.ostapchuk.car.rent.dto.order.OrderDto;
 import com.ostapchuk.car.rent.dto.ride.RideDetailsDto;
 import com.ostapchuk.car.rent.dto.ride.RideDto;
 import com.ostapchuk.car.rent.entity.Car;
@@ -13,6 +14,7 @@ import com.ostapchuk.car.rent.util.DateTimeUtil;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -36,6 +38,18 @@ public record OrderReadService(
                 .stream()
                 .collect(Collectors.groupingBy(Order::getUuid));
         return processRides(rides);
+    }
+
+    public Order complete(final OrderDto orderDto, final Car car) {
+        final User user = userReadService.findVerifiedById(orderDto.userId());
+        final Order order = orderRepository.findFirstByUserAndCarAndEndingIsNullAndStatusOrderByStartDesc(user, car,
+                        statusConverter.toOrderStatus(car.getStatus()))
+                .orElseThrow(() -> new EntityNotFoundException("Could not find order"));
+        user.setBalance(user.getBalance().subtract(calculateRidePrice(order, car)));
+        order.setEnding(LocalDateTime.now());
+        order.setPrice(calculatePrice(order, car));
+        car.setStatus(orderDto.carStatus());
+        return orderRepository.save(order);
     }
 
     public Order findExistingOrder(final User user, final Car car) {

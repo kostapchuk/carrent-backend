@@ -13,6 +13,8 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
 
     Optional<Order> findFirstByUserAndEndingIsNull(User user);
 
+    boolean existsByUserAndEndingIsNull(User user);
+
     List<Order> findAllByUuid(String uuid);
 
     Optional<Order> findFirstByUserAndCarAndEndingIsNullAndStatusOrderByStartDesc(User user, Car car,

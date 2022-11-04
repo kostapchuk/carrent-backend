@@ -10,7 +10,6 @@ import com.ostapchuk.car.rent.exception.UserUnverifiedException;
 import com.ostapchuk.car.rent.mapper.UserMapper;
 import com.ostapchuk.car.rent.repository.UserRepository;
 import com.ostapchuk.car.rent.util.Constant;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -33,7 +32,7 @@ public record UserReadService(
 
     public User findVerifiedById(final Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Could not find user with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("The user with id " + id + " is not verified yet"));
     }
 
     public List<UserDto> findAll() {
