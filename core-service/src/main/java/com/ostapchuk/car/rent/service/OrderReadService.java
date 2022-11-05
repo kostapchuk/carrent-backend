@@ -11,6 +11,7 @@ import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.repository.OrderRepository;
 import com.ostapchuk.car.rent.util.Constant;
 import com.ostapchuk.car.rent.util.DateTimeUtil;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,11 +28,12 @@ import static com.ostapchuk.car.rent.entity.OrderStatus.RENT_PAUSED;
 import static java.math.BigDecimal.ZERO;
 
 @Service
-public record OrderReadService(
-        OrderRepository orderRepository,
-        UserReadService userReadService,
-        StatusConverter statusConverter
-) {
+@RequiredArgsConstructor
+public class OrderReadService {
+
+    private final OrderRepository orderRepository;
+    private final UserReadService userReadService;
+    private final StatusConverter statusConverter;
 
     public List<RideDto> findAllRidesByUserId(final Long id) {
         final User user = userReadService.findById(id);

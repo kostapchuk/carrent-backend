@@ -8,6 +8,7 @@ import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.mapper.CarMapper;
 import com.ostapchuk.car.rent.repository.CarRepository;
 import com.ostapchuk.car.rent.repository.OrderRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,12 +21,13 @@ import static com.ostapchuk.car.rent.entity.CarStatus.IN_RENT;
 import static com.ostapchuk.car.rent.entity.CarStatus.IN_RENT_PAUSED;
 
 @Service
-public record CarReadService(
-        CarRepository carRepository,
-        OrderRepository orderRepository,
-        UserReadService userReadService,
-        CarMapper carMapper
-) {
+@RequiredArgsConstructor
+public class CarReadService {
+
+    private final CarRepository carRepository;
+    private final OrderRepository orderRepository;
+    private final UserReadService userReadService;
+    private final CarMapper carMapper;
 
     public CarDto findDtoById(final Integer id) {
         return carMapper.toDto(findById(id));
@@ -62,7 +64,7 @@ public record CarReadService(
         return carRepository.findById(carId)
                 .filter(car -> FREE.equals(carStatus) &&
                         (IN_RENT_PAUSED.equals(car.getStatus()) || IN_RENT.equals(car.getStatus()) ||
-                        IN_BOOKING.equals(car.getStatus()))
+                                IN_BOOKING.equals(car.getStatus()))
                 );
     }
 

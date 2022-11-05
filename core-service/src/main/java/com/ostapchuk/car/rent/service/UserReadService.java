@@ -10,6 +10,7 @@ import com.ostapchuk.car.rent.exception.UserUnverifiedException;
 import com.ostapchuk.car.rent.mapper.UserMapper;
 import com.ostapchuk.car.rent.repository.UserRepository;
 import com.ostapchuk.car.rent.util.Constant;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,10 +20,11 @@ import java.util.Set;
 import static java.math.BigDecimal.ZERO;
 
 @Service
-public record UserReadService(
-        UserRepository userRepository,
-        UserMapper userMapper
-) {
+@RequiredArgsConstructor
+public class UserReadService {
+
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public User findById(final Long id) {
         final User user = findVerifiedById(id);
