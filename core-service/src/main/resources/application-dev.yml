@@ -57,16 +57,11 @@ jwt:
   accessTokenExpiration: 120000
   refreshTokenExpiration: 86400
 
-#aws:
-#  access:
-#    key:
-#      id: ${AWS_ACCESS_KEY_ID}
-#      secret: ${AWS_ACCESS_KEY_SECRET}
-#  s3:
-#    region:
-#      name: ${AWS_S3_REGION}
-#    bucket:
-#      name: ${AWS_S3_BUCKET_NAME}
-
 frontend:
   url: ${FRONTEND_LINK}
+
+cloudinary:
+  cloud-name: ${CLOUDINARY_CLOUD_NAME}
+  api:
+    key: ${CLOUDINARY_API_KEY}
+    secret: ${CLOUDINARY_API_SECRET}

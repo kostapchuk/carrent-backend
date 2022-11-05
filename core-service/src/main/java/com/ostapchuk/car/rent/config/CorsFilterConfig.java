@@ -14,6 +14,11 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.lang.Boolean.TRUE;
+import static org.springframework.http.HttpMethod.DELETE;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.OPTIONS;
+import static org.springframework.http.HttpMethod.PATCH;
+import static org.springframework.http.HttpMethod.POST;
 
 @Configuration
 @RequiredArgsConstructor
@@ -37,7 +42,7 @@ public class CorsFilterConfig {
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(TRUE);
         config.setAllowedOrigins(List.of("https://www.sandbox.paypal.com", frontendUrl));
-        config.setAllowedMethods(SINGLETON_STAR); // TODO: 04.11.2022  
+        config.setAllowedMethods(List.of(OPTIONS.name(), GET.name(), POST.name(), PATCH.name(), DELETE.name()));
         config.setAllowedHeaders(SINGLETON_STAR); // TODO: 04.11.2022  
         return config;
     }

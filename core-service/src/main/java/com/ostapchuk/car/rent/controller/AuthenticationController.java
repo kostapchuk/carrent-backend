@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.controller;
 
-import com.ostapchuk.car.rent.dto.auth.AuthenticationRequestDto;
-import com.ostapchuk.car.rent.dto.auth.AuthenticationResponseDto;
+import com.ostapchuk.car.rent.dto.auth.LoginRequest;
+import com.ostapchuk.car.rent.dto.auth.LoginResponse;
 import com.ostapchuk.car.rent.service.AuthenticationService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 public record AuthenticationController(AuthenticationService authenticationService) {
 
     @PostMapping("/login")
-    public AuthenticationResponseDto authenticate(@RequestBody final AuthenticationRequestDto request) {
+    public LoginResponse login(@RequestBody final LoginRequest request) {
         return authenticationService.login(request);
     }
 }

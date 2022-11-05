@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.service;
 
-import com.ostapchuk.car.rent.dto.auth.AuthenticationRequestDto;
-import com.ostapchuk.car.rent.dto.auth.AuthenticationResponseDto;
+import com.ostapchuk.car.rent.dto.auth.LoginRequest;
+import com.ostapchuk.car.rent.dto.auth.LoginResponse;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.security.JwtTokenProvider;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -14,12 +14,12 @@ public record AuthenticationService(
         UserReadService userReadService,
         JwtTokenProvider jwtTokenProvider
 ) {
-    public AuthenticationResponseDto login(final AuthenticationRequestDto request) {
+    public LoginResponse login(final LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.email(), request.password())
         );
         final User user = userReadService.findByEmail(request.email());
         final String token = jwtTokenProvider.createToken(request.email(), user.getRole().name());
-        return new AuthenticationResponseDto(user.getId(), token, user.getRole().name());
+        return new LoginResponse(user.getId(), token, user.getRole().name());
     }
 }
