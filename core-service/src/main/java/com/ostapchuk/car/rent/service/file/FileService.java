@@ -9,6 +9,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+// TODO: 07.11.2022 add java doc to interfaces or classes
+
 public interface FileService {
 
     CompletableFuture<Optional<String>> upload(final MultipartFile multipartFile);
