@@ -15,12 +15,15 @@ import com.ostapchuk.car.rent.repository.UserRepository;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.UserReadService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -35,34 +38,133 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+/**
+ * Tests for {@link StartingRideStatusProcessor}
+ */
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {StartingRideStatusProcessor.class, OrderReadService.class, StatusConverter.class})
 class StartingRideStatusProcessorTest {
 
-    StartingRideStatusProcessor startingRideStatusProcessor;
+    @Autowired
+    private StartingRideStatusProcessor startingRideStatusProcessor;
+    @MockBean
+    private UpdatingRideStatusProcessor updatingRideStatusProcessor;
+    @MockBean
+    private CarReadService carReadService;
+    @MockBean
+    private OrderRepository orderRepository;
+    @MockBean
+    private UserReadService userReadService;
+    @MockBean
+    private UserRepository userRepository;
 
-    @Mock
-    UpdatingRideStatusProcessor updatingRideStatusProcessor;
+    @BeforeAll
+    protected static void beforeAll() {
+        defaultOrderDto = new OrderDto(defaultUser.getId(), defaultCar.getId(), CarStatus.IN_BOOKING);
+    }
 
-    @Mock
-    CarReadService carReadService;
+    /**
+     * {@link StartingRideStatusProcessor#process(OrderDto)}
+     */
+    @Test
+    @DisplayName("Car is free. User is active, verified and balance is positive. Should be able to start a ride")
+    void process_WhenCarIsFreeAndUserIsVerified_ShouldStart() {
+        // when
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+                Optional.of(defaultCar));
+        when(userReadService.findVerifiedById(defaultOrderDto.userId())).thenReturn(defaultUser);
+        when(orderRepository.existsByUserAndEndingIsNull(defaultUser)).thenReturn(false);
+        when(orderRepository.save(any(Order.class))).thenReturn(new Order());
 
-    @Mock
-    OrderRepository orderRepository;
+        // verify
+        // todo need to verify that method was called not that other method was not called
+        startingRideStatusProcessor.process(defaultOrderDto);
+//        verify(updatingRideStatusProcessor, never()).process(isA(OrderDto.class));
+        verify(userReadService, times(1)).findVerifiedById(anyLong());
+        verify(orderRepository, times(1)).existsByUserAndEndingIsNull(defaultUser);
+        verify(orderRepository, times(1)).save(any(Order.class));
+    }
 
-    @Mock
-    OrderReadService orderReadService;
+    /**
+     * {@link StartingRideStatusProcessor#process(OrderDto)}
+     */
+    @Test
+    @DisplayName("Car isn't free. User is active, verified and balance is positive. Shouldn't be able to start a ride")
+    void process_WhenCarIsNotFreeAndUserIsVerified_ShouldNotStart() {
+        // given
+        defaultCar.setStatus(CarStatus.IN_RENT);
 
-    @Mock
-    StatusConverter statusConverter;
+        // when
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+                Optional.empty());
 
-    @Mock
-    UserReadService userReadService;
+        // verify
+        startingRideStatusProcessor.process(defaultOrderDto);
+        verify(updatingRideStatusProcessor, times(1)).process(defaultOrderDto);
+    }
 
-    @Mock
-    UserRepository userRepository;
+    /**
+     * {@link StartingRideStatusProcessor#process(OrderDto)}
+     */
+    @Test
+    @DisplayName("Car is free. User is active, verified and balance is positive but has an active order. Shouldn't" +
+            " be able to start a ride")
+    void process_WhenCarIsFreeAndUserIsVerifiedAndHasActiveOrder_ShouldNotStart() {
+        // when
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+                Optional.of(defaultCar));
+        when(userReadService.findVerifiedById(defaultOrderDto.userId())).thenReturn(defaultUser);
+        when(orderRepository.existsByUserAndEndingIsNull(defaultUser)).thenReturn(true);
 
-    private OrderDto orderDto;
-    private final Car car = Car.builder()
+        // verify
+        final OrderCreationException thrown = assertThrows(
+                OrderCreationException.class,
+                () -> startingRideStatusProcessor.process(defaultOrderDto),
+                "Cannot start ride"
+        );
+        assertEquals("Cannot start ride", thrown.getMessage());
+        verify(updatingRideStatusProcessor, never()).process(defaultOrderDto);
+    }
+
+    /**
+     * {@link StartingRideStatusProcessor#process(OrderDto)}
+     */
+    @Test
+    @Disabled("Not implemented yet")
+    @DisplayName("Car is free. User is active, NOT verified with positive balance. Shouldn't be able to start a ride")
+    void process_WhenCarIsFreeAndUserIsNotVerified_ShouldNotStart() {
+        // when
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+                Optional.of(defaultCar));
+        when(userRepository.findById(defaultUser.getId())).thenReturn(Optional.empty());
+
+        // verify
+        startingRideStatusProcessor.process(defaultOrderDto);
+        final Long userId = defaultOrderDto.userId() + 10;
+        final EntityNotFoundException thrown = assertThrows(
+                EntityNotFoundException.class,
+                () -> userReadService.findVerifiedById(userId),
+                "The user with id " + defaultOrderDto.userId() + " is not verified yet"
+        );
+        verify(updatingRideStatusProcessor, never()).process(defaultOrderDto);
+        assertTrue(thrown.getMessage().contains("The user with id"));
+        verify(orderRepository, never()).existsByUserAndEndingIsNull(defaultUser);
+    }
+
+    /**
+     * {@link StartingRideStatusProcessor#process(OrderDto)}
+     */
+    @Test
+    @Disabled("Not implemented yet")
+    @DisplayName("Car isn't free. User is active, NOT verified with positive balance. Shouldn't be able to start a " +
+            "ride")
+    void process_WhenCarIsNotFreeAndUserIsNotVerified_ShouldNotStart() {
+
+    }
+
+    private static OrderDto defaultOrderDto;
+
+    private static final Car defaultCar = Car.builder()
             .id(1)
             .mark("BMW")
             .model("M5")
@@ -72,7 +174,7 @@ class StartingRideStatusProcessorTest {
             .status(CarStatus.FREE)
             .build();
 
-    private final User user = User.builder()
+    private static final User defaultUser = User.builder()
             .id(1L)
             .firstName("FirstName")
             .lastName("LastName")
@@ -86,107 +188,4 @@ class StartingRideStatusProcessorTest {
             .passportImgUrl("someurl")
             .drivingLicenseImgUrl("someurl")
             .build();
-
-    @Test
-    @DisplayName("Car is free. User is active, verified and balance is positive. Should be able to start a ride")
-    void process_WhenCarIsFreeAndUserIsVerified_ShouldStart() {
-        // given
-        orderDto = new OrderDto(user.getId(), car.getId(), CarStatus.IN_BOOKING);
-        // todo, replace with autoinject
-        startingRideStatusProcessor =
-                new StartingRideStatusProcessor(orderRepository, orderReadService, carReadService, userReadService,
-                        statusConverter, updatingRideStatusProcessor);
-
-        // when
-        when(carReadService.findStartable(car.getId(), orderDto.carStatus())).thenReturn(Optional.of(car));
-        when(userReadService.findVerifiedById(orderDto.userId())).thenReturn(user);
-        when(orderRepository.existsByUserAndEndingIsNull(user)).thenReturn(false);
-        when(orderRepository.save(any(Order.class))).thenReturn(new Order());
-
-        // verify
-        // todo need to verify that method was called not that other method was not called
-        startingRideStatusProcessor.process(orderDto);
-//        verify(updatingRideStatusProcessor, never()).process(isA(OrderDto.class));
-        verify(userReadService, times(1)).findVerifiedById(anyLong());
-        verify(orderRepository, times(1)).existsByUserAndEndingIsNull(user);
-        verify(orderRepository, times(1)).save(any(Order.class));
-    }
-
-    @Test
-    @DisplayName("Car isn't free. User is active, verified and balance is positive. Shouldn't be able to start a ride")
-    void process_WhenCarIsNotFreeAndUserIsVerified_ShouldNotStart() {
-        // given
-        car.setStatus(CarStatus.IN_RENT);
-        orderDto = new OrderDto(user.getId(), car.getId(), CarStatus.IN_BOOKING);
-        startingRideStatusProcessor =
-                new StartingRideStatusProcessor(orderRepository, orderReadService, carReadService, userReadService,
-                        statusConverter, updatingRideStatusProcessor);
-
-        // when
-        when(carReadService.findStartable(car.getId(), orderDto.carStatus())).thenReturn(Optional.empty());
-
-        // verify
-        startingRideStatusProcessor.process(orderDto);
-        verify(updatingRideStatusProcessor, times(1)).process(orderDto);
-    }
-
-    @Test
-    @DisplayName("Car is free. User is active, verified and balance is positive but has an active order. Shouldn't" +
-            " be able to start a ride")
-    void process_WhenCarIsFreeAndUserIsVerifiedAndHasActiveOrder_ShouldNotStart() {
-        // given
-        orderDto = new OrderDto(user.getId(), car.getId(), CarStatus.IN_BOOKING);
-        startingRideStatusProcessor =
-                new StartingRideStatusProcessor(orderRepository, orderReadService, carReadService, userReadService,
-                        statusConverter, updatingRideStatusProcessor);
-
-        // when
-        when(carReadService.findStartable(car.getId(), orderDto.carStatus())).thenReturn(Optional.of(car));
-        when(userReadService.findVerifiedById(orderDto.userId())).thenReturn(user);
-        when(orderRepository.existsByUserAndEndingIsNull(user)).thenReturn(true);
-        final OrderCreationException thrown = assertThrows(
-                OrderCreationException.class,
-                () -> startingRideStatusProcessor.process(orderDto),
-                "Cannot start ride"
-        );
-
-        // verify
-        assertEquals("Cannot start ride", thrown.getMessage());
-        verify(updatingRideStatusProcessor, never()).process(orderDto);
-    }
-
-    @Test
-    @Disabled("Not implemented yet")
-    @DisplayName("Car is free. User is active, NOT verified with positive balance. Shouldn't be able to start a ride")
-    void process_WhenCarIsFreeAndUserIsNotVerified_ShouldNotStart() {
-        // given
-        orderDto = new OrderDto(user.getId() + 10, car.getId(), CarStatus.IN_BOOKING);
-        startingRideStatusProcessor =
-                new StartingRideStatusProcessor(orderRepository, orderReadService, carReadService, userReadService,
-                        statusConverter, updatingRideStatusProcessor);
-
-        // when
-        when(carReadService.findStartable(car.getId(), orderDto.carStatus())).thenReturn(Optional.of(car));
-        when(userRepository.findById(user.getId())).thenReturn(Optional.empty());
-        final Long userId = orderDto.userId() + 10;
-        final EntityNotFoundException thrown = assertThrows(
-                EntityNotFoundException.class,
-                () -> userReadService.findVerifiedById(userId),
-                "The user with id " + orderDto.userId() + " is not verified yet"
-        );
-
-        // verify
-        startingRideStatusProcessor.process(orderDto);
-        verify(updatingRideStatusProcessor, never()).process(orderDto);
-        assertTrue(thrown.getMessage().contains("The user with id"));
-        verify(orderRepository, never()).existsByUserAndEndingIsNull(user);
-    }
-
-    @Test
-    @Disabled("Not implemented yet")
-    @DisplayName("Car isn't free. User is active, NOT verified with positive balance. Shouldn't be able to start a " +
-            "ride")
-    void process_WhenCarIsNotFreeAndUserIsNotVerified_ShouldNotStart() {
-
-    }
 }
