@@ -8,7 +8,6 @@ import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.entity.UserStatus;
-import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.exception.OrderCreationException;
 import com.ostapchuk.car.rent.repository.OrderRepository;
 import com.ostapchuk.car.rent.repository.UserRepository;
@@ -16,7 +15,6 @@ import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,7 +28,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.never;
@@ -77,9 +74,7 @@ class StartingRideStatusProcessorTest {
         when(orderRepository.save(any(Order.class))).thenReturn(new Order());
 
         // verify
-        // todo need to verify that method was called not that other method was not called
         startingRideStatusProcessor.process(defaultOrderDto);
-//        verify(updatingRideStatusProcessor, never()).process(isA(OrderDto.class));
         verify(userReadService, times(1)).findVerifiedById(anyLong());
         verify(orderRepository, times(1)).existsByUserAndEndingIsNull(defaultUser);
         verify(orderRepository, times(1)).save(any(Order.class));
@@ -124,42 +119,6 @@ class StartingRideStatusProcessorTest {
         );
         assertEquals("Cannot start ride", thrown.getMessage());
         verify(updatingRideStatusProcessor, never()).process(defaultOrderDto);
-    }
-
-    /**
-     * {@link StartingRideStatusProcessor#process(OrderDto)}
-     */
-    @Test
-    @Disabled("Not implemented yet")
-    @DisplayName("Car is free. User is active, NOT verified with positive balance. Shouldn't be able to start a ride")
-    void process_WhenCarIsFreeAndUserIsNotVerified_ShouldNotStart() {
-        // when
-        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
-                Optional.of(defaultCar));
-        when(userRepository.findById(defaultUser.getId())).thenReturn(Optional.empty());
-
-        // verify
-        startingRideStatusProcessor.process(defaultOrderDto);
-        final Long userId = defaultOrderDto.userId() + 10;
-        final EntityNotFoundException thrown = assertThrows(
-                EntityNotFoundException.class,
-                () -> userReadService.findVerifiedById(userId),
-                "The user with id " + defaultOrderDto.userId() + " is not verified yet"
-        );
-        verify(updatingRideStatusProcessor, never()).process(defaultOrderDto);
-        assertTrue(thrown.getMessage().contains("The user with id"));
-        verify(orderRepository, never()).existsByUserAndEndingIsNull(defaultUser);
-    }
-
-    /**
-     * {@link StartingRideStatusProcessor#process(OrderDto)}
-     */
-    @Test
-    @Disabled("Not implemented yet")
-    @DisplayName("Car isn't free. User is active, NOT verified with positive balance. Shouldn't be able to start a " +
-            "ride")
-    void process_WhenCarIsNotFreeAndUserIsNotVerified_ShouldNotStart() {
-
     }
 
     private static OrderDto defaultOrderDto;
