@@ -23,7 +23,7 @@ public class CloudinaryFileService implements FileService {
     private final Cloudinary cloudinary;
 
     @Async
-    @SneakyThrows
+    @SneakyThrows // TODO: 07.11.2022 java doc or catch exception and return the result to user
     @Override
     public CompletableFuture<Optional<String>> upload(final MultipartFile multipartFile) {
         final File file = convertMultiPartFileToFile(multipartFile);

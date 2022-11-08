@@ -1,4 +1,5 @@
 plugins {
+    id 'jacoco'
     id 'org.springframework.boot' version '2.6.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
     id "io.freefair.lombok" version "6.5.1"
@@ -21,6 +22,7 @@ subprojects {
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'io.freefair.lombok'
     apply plugin: 'java'
+    apply plugin: 'jacoco'
 
     repositories {
         mavenCentral()
@@ -28,6 +30,11 @@ subprojects {
 
     test {
         useJUnitPlatform()
+    }
+
+    jacoco {
+        toolVersion = "0.8.8"
+        reportsDir = file("$buildDir/jacoco")
     }
 
     configurations {
