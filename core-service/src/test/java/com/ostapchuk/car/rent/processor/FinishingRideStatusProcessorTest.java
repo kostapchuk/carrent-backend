@@ -8,15 +8,18 @@ import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.entity.UserStatus;
 import com.ostapchuk.car.rent.exception.CarUnavailableException;
-import com.ostapchuk.car.rent.repository.OrderRepository;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
+import com.ostapchuk.car.rent.service.OrderWriteService;
 import com.ostapchuk.car.rent.service.UserReadService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -28,32 +31,78 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
+/**
+ * Tests for {@link FinishingRideStatusProcessor}
+ */
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {
+        FinishingRideStatusProcessor.class, StatusConverter.class,
+        UpdatingRideStatusProcessor.class, StartingRideStatusProcessor.class
+})
 class FinishingRideStatusProcessorTest {
 
-    StartingRideStatusProcessor startingRideStatusProcessor;
+    @Autowired
+    private StartingRideStatusProcessor startingRideStatusProcessor;
+    @MockBean
+    private CarReadService carReadService;
+    @MockBean
+    private OrderReadService orderReadService;
+    @MockBean
+    private OrderWriteService orderWriteService;
+    @MockBean
+    private UserReadService userReadService;
 
-    UpdatingRideStatusProcessor updatingRideStatusProcessor;
+    @BeforeAll
+    protected static void beforeAll() {
+        defaultOrderDto = new OrderDto(defaultUser.getId(), defaultCar.getId(), CarStatus.IN_BOOKING);
+    }
 
-    FinishingRideStatusProcessor finishingRideStatusProcessor;
+    /**
+     * {@link FinishingRideStatusProcessor#process(OrderDto)}
+     */
+    @Test
+    @DisplayName("Car is in rent by the user. The user is active, verified and balance is positive. Should be able to" +
+            " finish a ride")
+    void process_WhenCarIsInRentAndUserIsVerified_ShouldFinishRide() {
+        // when
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+                Optional.empty());
+        when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+                Optional.empty());
+        when(carReadService.findFinishable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(Optional.of(
+                defaultCar));
 
-    @Mock
-    CarReadService carReadService;
+        // verify
+        startingRideStatusProcessor.process(defaultOrderDto);
+        verify(orderReadService, times(1)).complete(defaultOrderDto, defaultCar);
+    }
 
-    @Mock
-    OrderRepository orderRepository;
+    /**
+     * {@link FinishingRideStatusProcessor#process(OrderDto)}
+     */
+    @Test
+    @DisplayName("The car was already taken by another user or the car status and order status are invalid to process" +
+            " the request")
+    void process_CarTakenOrCarStatusAndOrderStatusIsInvalid_ShouldNotProcess() {
+        // when
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+                Optional.empty());
+        when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+                Optional.empty());
+        when(carReadService.findFinishable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+                Optional.empty());
 
-    @Mock
-    OrderReadService orderReadService;
+        // verify
+        final CarUnavailableException thrown = assertThrows(
+                CarUnavailableException.class,
+                () -> startingRideStatusProcessor.process(defaultOrderDto)
+        );
+        assertEquals("Sorry, car is not available", thrown.getMessage());
+        verify(orderReadService, never()).complete(defaultOrderDto, defaultCar);
+    }
 
-    @Mock
-    StatusConverter statusConverter;
-
-    @Mock
-    UserReadService userReadService;
-
-    private OrderDto orderDto;
-    private final Car car = Car.builder()
+    private static OrderDto defaultOrderDto;
+    private static final Car defaultCar = Car.builder()
             .id(1)
             .mark("BMW")
             .model("M5")
@@ -63,7 +112,7 @@ class FinishingRideStatusProcessorTest {
             .status(CarStatus.IN_RENT)
             .build();
 
-    private final User user = User.builder()
+    private static final User defaultUser = User.builder()
             .id(1L)
             .firstName("FirstName")
             .lastName("LastName")
@@ -77,63 +126,5 @@ class FinishingRideStatusProcessorTest {
             .passportImgUrl("someurl")
             .drivingLicenseImgUrl("someurl")
             .build();
-
-    @Test
-    @DisplayName("Car is in rent by the user. The user is active, verified and balance is positive. Should be able to" +
-            " finish a ride")
-    void process_WhenCarIsInRentAndUserIsVerified_ShouldFinishRide() {
-        // given
-        orderDto = new OrderDto(user.getId(), car.getId(), CarStatus.IN_RENT_PAUSED);
-        finishingRideStatusProcessor =
-                new FinishingRideStatusProcessor(orderRepository, orderReadService, carReadService, userReadService);
-        updatingRideStatusProcessor =
-                new UpdatingRideStatusProcessor(orderRepository, orderReadService, carReadService, userReadService,
-                        statusConverter, finishingRideStatusProcessor);
-        startingRideStatusProcessor =
-                new StartingRideStatusProcessor(orderRepository, orderReadService, carReadService, userReadService,
-                        statusConverter, updatingRideStatusProcessor);
-
-        // when
-        when(carReadService.findStartable(car.getId(), orderDto.carStatus())).thenReturn(Optional.empty());
-        when(carReadService.findUpdatable(car.getId(), orderDto.carStatus())).thenReturn(Optional.empty());
-        when(carReadService.findFinishable(car.getId(), orderDto.carStatus())).thenReturn(Optional.of(car));
-
-        // verify
-        // todo need to verify that method was called not that other method was not called
-        startingRideStatusProcessor.process(orderDto);
-        verify(orderReadService, times(1)).complete(orderDto, car);
-    }
-
-    @Test
-    @DisplayName("The car was already taken by another user or the car status and order status are invalid to process" +
-            " the request")
-    void process_CarTakenOrCarStatusAndOrderStatusIsInvalid_ShouldNotProcess() {
-        // given
-        orderDto = new OrderDto(user.getId(), car.getId(), CarStatus.IN_RENT_PAUSED);
-        finishingRideStatusProcessor =
-                new FinishingRideStatusProcessor(orderRepository, orderReadService, carReadService, userReadService);
-        updatingRideStatusProcessor =
-                new UpdatingRideStatusProcessor(orderRepository, orderReadService, carReadService, userReadService,
-                        statusConverter, finishingRideStatusProcessor);
-        startingRideStatusProcessor =
-                new StartingRideStatusProcessor(orderRepository, orderReadService, carReadService, userReadService,
-                        statusConverter, updatingRideStatusProcessor);
-
-        // when
-        when(carReadService.findStartable(car.getId(), orderDto.carStatus())).thenReturn(Optional.empty());
-        when(carReadService.findUpdatable(car.getId(), orderDto.carStatus())).thenReturn(Optional.empty());
-        when(carReadService.findFinishable(car.getId(), orderDto.carStatus())).thenReturn(Optional.empty());
-
-        // verify
-        // todo need to verify that method was called not that other method was not called
-        final CarUnavailableException thrown = assertThrows(
-                CarUnavailableException.class,
-                () -> startingRideStatusProcessor.process(orderDto)
-        );
-
-        // verify
-        assertEquals("Sorry, car is not available", thrown.getMessage());
-        verify(orderReadService, never()).complete(orderDto, car);
-    }
 
 }

@@ -80,6 +80,10 @@ public class OrderReadService {
         }
     }
 
+    public boolean existsByUserAndEndingIsNull(final User user) {
+        return orderRepository.existsByUserAndEndingIsNull(user);
+    }
+
     private List<RideDto> processRides(final Map<String, List<Order>> rides) {
         final List<RideDto> ridesDto = new ArrayList<>();
         for (final Map.Entry<String, List<Order>> entry : rides.entrySet()) {

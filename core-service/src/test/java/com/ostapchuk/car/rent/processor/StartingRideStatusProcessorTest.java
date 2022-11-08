@@ -9,10 +9,9 @@ import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.entity.UserStatus;
 import com.ostapchuk.car.rent.exception.OrderCreationException;
-import com.ostapchuk.car.rent.repository.OrderRepository;
-import com.ostapchuk.car.rent.repository.UserRepository;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
+import com.ostapchuk.car.rent.service.OrderWriteService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -39,7 +38,7 @@ import static org.mockito.Mockito.when;
  * Tests for {@link StartingRideStatusProcessor}
  */
 @ExtendWith(SpringExtension.class)
-@ContextConfiguration(classes = {StartingRideStatusProcessor.class, OrderReadService.class, StatusConverter.class})
+@ContextConfiguration(classes = {StartingRideStatusProcessor.class, StatusConverter.class})
 class StartingRideStatusProcessorTest {
 
     @Autowired
@@ -49,11 +48,11 @@ class StartingRideStatusProcessorTest {
     @MockBean
     private CarReadService carReadService;
     @MockBean
-    private OrderRepository orderRepository;
-    @MockBean
     private UserReadService userReadService;
     @MockBean
-    private UserRepository userRepository;
+    private OrderWriteService orderWriteService;
+    @MockBean
+    private OrderReadService orderReadService;
 
     @BeforeAll
     protected static void beforeAll() {
@@ -70,14 +69,14 @@ class StartingRideStatusProcessorTest {
         when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
                 Optional.of(defaultCar));
         when(userReadService.findVerifiedById(defaultOrderDto.userId())).thenReturn(defaultUser);
-        when(orderRepository.existsByUserAndEndingIsNull(defaultUser)).thenReturn(false);
-        when(orderRepository.save(any(Order.class))).thenReturn(new Order());
+        when(orderReadService.existsByUserAndEndingIsNull(defaultUser)).thenReturn(false);
+        when(orderWriteService.save(any(Order.class))).thenReturn(new Order());
 
         // verify
         startingRideStatusProcessor.process(defaultOrderDto);
         verify(userReadService, times(1)).findVerifiedById(anyLong());
-        verify(orderRepository, times(1)).existsByUserAndEndingIsNull(defaultUser);
-        verify(orderRepository, times(1)).save(any(Order.class));
+        verify(orderReadService, times(1)).existsByUserAndEndingIsNull(defaultUser);
+        verify(orderWriteService, times(1)).save(any(Order.class));
     }
 
     /**
@@ -109,7 +108,7 @@ class StartingRideStatusProcessorTest {
         when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
                 Optional.of(defaultCar));
         when(userReadService.findVerifiedById(defaultOrderDto.userId())).thenReturn(defaultUser);
-        when(orderRepository.existsByUserAndEndingIsNull(defaultUser)).thenReturn(true);
+        when(orderReadService.existsByUserAndEndingIsNull(defaultUser)).thenReturn(true);
 
         // verify
         final OrderCreationException thrown = assertThrows(
