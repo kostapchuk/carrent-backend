@@ -4,6 +4,7 @@ import com.ostapchuk.car.rent.converter.StatusConverter;
 import com.ostapchuk.car.rent.dto.order.OrderDto;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.CarStatus;
+import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.entity.UserStatus;
@@ -11,6 +12,7 @@ import com.ostapchuk.car.rent.exception.CarUnavailableException;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
+import com.ostapchuk.car.rent.service.PriceService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -51,6 +53,8 @@ class FinishingRideStatusProcessorTest {
     private OrderWriteService orderWriteService;
     @MockBean
     private UserReadService userReadService;
+    @MockBean
+    private PriceService priceService;
 
     @BeforeAll
     protected static void beforeAll() {
@@ -64,6 +68,9 @@ class FinishingRideStatusProcessorTest {
     @DisplayName("Car is in rent by the user. The user is active, verified and balance is positive. Should be able to" +
             " finish a ride")
     void process_WhenCarIsInRentAndUserIsVerified_ShouldFinishRide() {
+        // given
+        final Order order = new Order();
+
         // when
         when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
                 Optional.empty());
@@ -71,10 +78,13 @@ class FinishingRideStatusProcessorTest {
                 Optional.empty());
         when(carReadService.findFinishable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(Optional.of(
                 defaultCar));
+        when(userReadService.findVerifiedById(defaultUser.getId())).thenReturn(defaultUser);
+        when(orderReadService.findExistingByUserAndCar(defaultUser, defaultCar)).thenReturn(order);
+        when(priceService.calculateRidePrice(order, defaultCar)).thenReturn(new BigDecimal("10"));
 
         // verify
         startingRideStatusProcessor.process(defaultOrderDto);
-        verify(orderReadService, times(1)).complete(defaultOrderDto, defaultCar);
+        verify(userReadService, times(1)).findVerifiedById(defaultUser.getId());
     }
 
     /**
@@ -98,7 +108,7 @@ class FinishingRideStatusProcessorTest {
                 () -> startingRideStatusProcessor.process(defaultOrderDto)
         );
         assertEquals("Sorry, car is not available", thrown.getMessage());
-        verify(orderReadService, never()).complete(defaultOrderDto, defaultCar);
+        verify(userReadService, never()).findVerifiedById(defaultUser.getId());
     }
 
     private static OrderDto defaultOrderDto;

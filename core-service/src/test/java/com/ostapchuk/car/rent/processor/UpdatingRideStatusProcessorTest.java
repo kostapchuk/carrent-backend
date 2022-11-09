@@ -11,6 +11,7 @@ import com.ostapchuk.car.rent.entity.UserStatus;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
+import com.ostapchuk.car.rent.service.PriceService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -50,6 +51,8 @@ class UpdatingRideStatusProcessorTest {
     private OrderReadService orderReadService;
     @MockBean
     private UserReadService userReadService;
+    @MockBean
+    private PriceService priceService;
 
     @BeforeAll
     protected static void beforeAll() {
@@ -69,7 +72,7 @@ class UpdatingRideStatusProcessorTest {
         when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(Optional.of(
                 defaultCar));
         when(userReadService.findVerifiedById(defaultOrderDto.userId())).thenReturn(defaultUser);
-        when(orderReadService.findExistingOrder(defaultUser, defaultCar)).thenReturn(new Order());
+        when(orderReadService.findExistingByUserAndCar(defaultUser, defaultCar)).thenReturn(new Order());
         when(orderWriteService.save(any(Order.class))).thenReturn(new Order());
 
         // verify

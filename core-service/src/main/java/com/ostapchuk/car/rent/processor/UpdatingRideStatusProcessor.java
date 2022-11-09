@@ -8,6 +8,7 @@ import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
+import com.ostapchuk.car.rent.service.PriceService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import org.springframework.stereotype.Component;
 
@@ -26,17 +27,18 @@ import java.util.Optional;
 class UpdatingRideStatusProcessor extends RideStatusProcessor {
 
     private final StatusConverter statusConverter;
-    private final OrderWriteService orderWriteService;
+    private final PriceService priceService;
 
-    public UpdatingRideStatusProcessor(final OrderWriteService orderWriteService,
-                                       final OrderReadService orderReadService,
+    public UpdatingRideStatusProcessor(final OrderReadService orderReadService,
+                                       final OrderWriteService orderWriteService,
                                        final CarReadService carReadService,
                                        final UserReadService userReadService,
                                        final StatusConverter statusConverter,
+                                       final PriceService priceService,
                                        final FinishingRideStatusProcessor finishingRideStatusProcessor) {
-        super(orderReadService, carReadService, userReadService, finishingRideStatusProcessor);
+        super(orderReadService, carReadService, userReadService, orderWriteService, finishingRideStatusProcessor);
         this.statusConverter = statusConverter;
-        this.orderWriteService = orderWriteService;
+        this.priceService = priceService;
     }
 
     @Override
@@ -51,9 +53,9 @@ class UpdatingRideStatusProcessor extends RideStatusProcessor {
 
     private void updateRide(final OrderDto orderDto, final Car car) {
         final User user = userReadService.findVerifiedById(orderDto.userId());
-        final Order order = orderReadService.findExistingOrder(user, car);
+        final Order order = orderReadService.findExistingByUserAndCar(user, car);
         order.setEnding(LocalDateTime.now());
-        order.setPrice(orderReadService.calculatePrice(order, car));
+        order.setPrice(priceService.calculatePrice(order, car));
         orderWriteService.save(order);
         car.setStatus(orderDto.carStatus());
         final Order newOrder = Order.builder().user(user).uuid(order.getUuid()).start(LocalDateTime.now()).car(car)

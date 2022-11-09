@@ -25,7 +25,7 @@ import java.util.UUID;
 public class StartingRideStatusProcessor extends RideStatusProcessor {
 
     private final StatusConverter statusConverter;
-    private final OrderWriteService orderWriteService;
+
 
     public StartingRideStatusProcessor(final OrderWriteService orderWriteService,
                                        final OrderReadService orderReadService,
@@ -33,9 +33,8 @@ public class StartingRideStatusProcessor extends RideStatusProcessor {
                                        final UserReadService userReadService,
                                        final StatusConverter statusConverter,
                                        final UpdatingRideStatusProcessor updatingRideStatusProcessor) {
-        super(orderReadService, carReadService, userReadService, updatingRideStatusProcessor);
+        super(orderReadService, carReadService, userReadService, orderWriteService, updatingRideStatusProcessor);
         this.statusConverter = statusConverter;
-        this.orderWriteService = orderWriteService;
     }
 
     @Override

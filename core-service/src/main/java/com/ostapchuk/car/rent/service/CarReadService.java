@@ -29,13 +29,11 @@ public class CarReadService {
     private final UserReadService userReadService;
     private final CarMapper carMapper;
 
-    public CarDto findDtoById(final Integer id) {
-        return carMapper.toDto(findById(id));
-    }
-
-    public Car findById(final Integer id) {
-        return carRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Could not find car with id: " + id));
+    public CarDto findById(final Integer id) {
+        return carMapper.toDto(
+                carRepository.findById(id)
+                        .orElseThrow(() -> new EntityNotFoundException("Could not find car with id: " + id))
+        );
     }
 
     public List<CarDto> findAllFree() {
