@@ -1,13 +1,26 @@
 package com.ostapchuk.car.rent.service.file;
 
-import org.springframework.scheduling.annotation.Async;
+import lombok.SneakyThrows;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+// TODO: 07.11.2022 add java doc to interfaces or classes
+
 public interface FileService {
 
-    @Async
     CompletableFuture<Optional<String>> upload(final MultipartFile multipartFile);
+
+    @SneakyThrows
+    default File convertMultiPartFileToFile(final MultipartFile multipartFile) {
+        final File file = new File(Objects.requireNonNull(multipartFile.getOriginalFilename()));
+        try (final FileOutputStream outputStream = new FileOutputStream(file)) {
+            outputStream.write(multipartFile.getBytes());
+        }
+        return file;
+    }
 }

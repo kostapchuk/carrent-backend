@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.dto.auth;
 
-public record AuthenticationResponseDto(
+public record LoginResponse(
         Long userId,
         String token,
         String role

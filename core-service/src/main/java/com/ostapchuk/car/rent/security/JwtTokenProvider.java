@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.security;
 
-import com.ostapchuk.car.rent.config.JwtConfig;
+import com.ostapchuk.car.rent.properties.JwtProperties;
 import com.ostapchuk.car.rent.exception.JwtAuthenticationException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -29,13 +29,13 @@ public class JwtTokenProvider {
 
     private final UserDetailsService userDetailsService;
 
-    private final JwtConfig jwtConfig;
+    private final JwtProperties jwtProperties;
 
     private String secretKey;
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(jwtConfig.secret().getBytes());
+        secretKey = Base64.getEncoder().encodeToString(jwtProperties.secret().getBytes());
     }
 
     public String createToken(final String userName, final String role) {
@@ -71,7 +71,7 @@ public class JwtTokenProvider {
     }
 
     String resolveToken(final HttpServletRequest request) {
-        return request.getHeader(jwtConfig.header());
+        return request.getHeader(jwtProperties.header());
     }
 
     private String retrieveUserName(final String token) {
@@ -84,7 +84,7 @@ public class JwtTokenProvider {
 
     private Date retrieveValidityDate() {
         return Date.from(
-                now().plusSeconds(jwtConfig.accessTokenExpiration().toSeconds()).atZone(ZoneId.systemDefault())
+                now().plusSeconds(jwtProperties.accessTokenExpiration().toSeconds()).atZone(ZoneId.systemDefault())
                         .toInstant());
     }
 }

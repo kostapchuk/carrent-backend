@@ -5,6 +5,7 @@ import com.ostapchuk.car.rent.dto.user.UserDto;
 import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.UserStatus;
 import com.ostapchuk.car.rent.service.OrderReadService;
+import com.ostapchuk.car.rent.service.RideService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -22,12 +23,13 @@ public class UserReadController {
 
     private final UserReadService userReadService;
     private final OrderReadService orderReadService;
+    private final RideService rideService;
 
     // TODO: 3/18/2022 check the same user
     @GetMapping("/api/v1/users/{id}/rides")
     @PreAuthorize("hasAuthority('users:read')")
     public List<RideDto> findAllRidesById(@PathVariable final Long id) {
-        return orderReadService.findAllRidesByUserId(id);
+        return rideService.findAllRidesByUserId(id);
     }
 
     @GetMapping("/api/v1/users/{id}/balance")

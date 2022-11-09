@@ -24,6 +24,6 @@ public record CarReadController(CarReadService carReadService) {
 
     @GetMapping("/api/v1/cars/{id}")
     public CarDto findById(@PathVariable final Integer id) {
-        return carReadService.findDtoById(id);
+        return carReadService.findById(id);
     }
 }
