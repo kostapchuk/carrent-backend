@@ -10,14 +10,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.math.BigDecimal;
 import java.util.List;
 
 import static javax.persistence.EnumType.STRING;
-import static javax.persistence.GenerationType.IDENTITY;
 
 @Builder
 @Getter
@@ -28,40 +29,41 @@ import static javax.persistence.GenerationType.IDENTITY;
 @Table(name = User.USER)
 public class User {
 
-    public static final String USER = "user";
+    static final String USER = "user";
 
     @Id
-    @GeneratedValue(strategy = IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
+    @SequenceGenerator(name = "user_id_seq", sequenceName = "user_id_seq", allocationSize = 1)
     private Long id;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "phone")
+    @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Enumerated(STRING)
-    @Column(name = "role")
-    private Role role;
+    @Column(name = "role", nullable = false)
+    private Role role = Role.USER;
 
     @Enumerated(STRING)
-    @Column(name = "status")
-    private UserStatus status;
+    @Column(name = "status", nullable = false)
+    private UserStatus status = UserStatus.ACTIVE;
 
-    @Column(name = "balance")
-    private BigDecimal balance;
+    @Column(name = "balance", nullable = false)
+    private BigDecimal balance = BigDecimal.ZERO;
 
-    @Column(name = "verified")
-    private boolean verified;
+    @Column(name = "verified", nullable = false)
+    private boolean verified = false;
 
     @Column(name = "passport_img_url")
     private String passportImgUrl;

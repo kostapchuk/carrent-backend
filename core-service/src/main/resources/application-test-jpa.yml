@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:tc:postgresql:14.2:///carrent
+    username: user
+    password: password
+  jpa:
+    properties.hibernate:
+      globally_quoted_identifiers: true
+    hibernate:
+      ddl-auto: validate
