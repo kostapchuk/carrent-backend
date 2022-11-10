@@ -44,6 +44,9 @@ jobs:
     - name: Run Coverage
       run: ./gradlew testCoverage
 
+    - name: Run SonarLint
+      run: ./gradlew sonarlintMain
+
     - name: Upload Report
       uses: 'actions/upload-artifact@v2'
       with:

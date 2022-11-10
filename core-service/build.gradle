@@ -1,3 +1,7 @@
+plugins {
+    id "name.remal.sonarlint" version "1.5.0"
+}
+
 ext {
     springDocVersion = '1.6.12'
     testContainersVersion = '1.17.5'
@@ -61,6 +65,12 @@ tasks.create(name: "testCoverage", type: JacocoReport, dependsOn: "test") {
 
     executionData.from = files("${project.buildDir}/jacoco/test.exec")
 }
+
+sonarlint {
+    ignoreFailures = false
+
+}
+
 bootJar {
     enabled = true
 }
