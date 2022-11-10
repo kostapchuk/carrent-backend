@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.security;
 
-import com.ostapchuk.car.rent.properties.JwtProperties;
 import com.ostapchuk.car.rent.exception.JwtAuthenticationException;
+import com.ostapchuk.car.rent.properties.JwtProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.JwtException;

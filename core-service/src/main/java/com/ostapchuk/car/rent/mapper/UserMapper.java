@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public record UserMapper() {
 
+    // TODO: 10.11.2022 separate dtos to request/response classes
     public UserDto toDto(final User user) {
         return new UserDto(user.getId(),
                 user.getFirstName(),
