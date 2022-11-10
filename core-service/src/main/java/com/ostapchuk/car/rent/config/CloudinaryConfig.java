@@ -14,7 +14,6 @@ import java.util.Map;
 public class CloudinaryConfig {
 
     private final CloudinaryProperties cloudinaryProperties;
-
     private Map<String, String> config;
 
     @PostConstruct

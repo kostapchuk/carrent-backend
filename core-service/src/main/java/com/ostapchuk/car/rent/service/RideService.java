@@ -37,8 +37,9 @@ public class RideService {
         final List<RideDto> ridesDto = new ArrayList<>();
         for (final Map.Entry<String, List<Order>> entry : rides.entrySet()) {
             final List<RideDetailsDto> rideDetailsDtos = new ArrayList<>();
-            entry.getValue().forEach(order -> rideDetailsDtos.add(new RideDetailsDto(order.getStart(), order.getEnding(),
-                    order.getStatus().toString(), order.getPrice())));
+            entry.getValue()
+                    .forEach(order -> rideDetailsDtos.add(new RideDetailsDto(order.getStart(), order.getEnding(),
+                            order.getStatus().toString(), order.getPrice())));
             final Order order = entry.getValue()
                     .get(Constant.ZERO_INT);
             final Car car = order.getCar();

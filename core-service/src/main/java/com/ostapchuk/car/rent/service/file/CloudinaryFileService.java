@@ -18,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 @Primary
 @Component
 @RequiredArgsConstructor
-public class CloudinaryFileService implements FileService {
+class CloudinaryFileService implements FileService {
 
     private final Cloudinary cloudinary;
 
@@ -27,7 +27,7 @@ public class CloudinaryFileService implements FileService {
     @Override
     public CompletableFuture<Optional<String>> upload(final MultipartFile multipartFile) {
         final File file = convertMultiPartFileToFile(multipartFile);
-        final Object url =  cloudinary.uploader().upload(file,
+        final Object url = cloudinary.uploader().upload(file,
                 ObjectUtils.asMap("public_id", UUID.randomUUID().toString())
         ).get("url");
         Files.delete(file.toPath());

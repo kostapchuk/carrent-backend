@@ -4,7 +4,6 @@ import com.ostapchuk.car.rent.dto.ride.RideDto;
 import com.ostapchuk.car.rent.dto.user.UserDto;
 import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.UserStatus;
-import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.RideService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import java.util.Set;
 public class UserReadController {
 
     private final UserReadService userReadService;
-    private final OrderReadService orderReadService;
     private final RideService rideService;
 
     // TODO: 3/18/2022 check the same user
