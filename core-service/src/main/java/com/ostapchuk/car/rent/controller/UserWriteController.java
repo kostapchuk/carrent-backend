@@ -26,12 +26,6 @@ public class UserWriteController {
         return userWriteService.create(userDto);
     }
 
-//    @PutMapping("/api/v1/users")
-//    public ResultDto update(@RequestBody final UserDto userDto) {
-////        return userWriteService.update(userDto);
-//        return new ResultDto("Not implemented", false);
-//    }
-
     @DeleteMapping("/api/v1/users/{id}")
     @PreAuthorize("hasAuthority('users:delete')")
     public void delete(@PathVariable final Long id) {

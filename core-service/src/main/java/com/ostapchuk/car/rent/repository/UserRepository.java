@@ -20,7 +20,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
     @Modifying
     @Transactional
-    @Query("update User u set u.balance = 0 where u.id = :id")
+    @Query("update User u set u.balance = 0.0 where u.id = :id")
     void resetBalance(@Param("id") Long id);
 
     @Modifying

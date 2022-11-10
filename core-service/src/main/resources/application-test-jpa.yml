@@ -8,3 +8,4 @@ spring:
       globally_quoted_identifiers: true
     hibernate:
       ddl-auto: validate
+    show-sql: true
