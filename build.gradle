@@ -1,36 +1,64 @@
 plugins {
+    id 'jacoco'
     id 'org.springframework.boot' version '2.6.4'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id "io.freefair.lombok" version "6.5.1"
     id 'java'
-}
-
-group = 'com.ostapchuk'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
-
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
 }
 
 repositories {
     mavenCentral()
 }
 
-dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.191')
-    implementation 'com.amazonaws:aws-java-sdk-s3'
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'org.postgresql:postgresql'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+allprojects {
+    group = 'com.ostapchuk'
+    version = '0.0.1-SNAPSHOT'
+    sourceCompatibility = '17'
 }
 
-tasks.named('test') {
-    useJUnitPlatform()
+subprojects {
+
+    apply plugin: 'org.springframework.boot'
+    apply plugin: 'io.spring.dependency-management'
+    apply plugin: 'io.freefair.lombok'
+    apply plugin: 'java'
+    apply plugin: 'jacoco'
+
+    repositories {
+        mavenCentral()
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    jacoco {
+        toolVersion = "0.8.8"
+        reportsDir = file("$buildDir/jacoco")
+    }
+
+    configurations {
+        compileOnly {
+            extendsFrom annotationProcessor
+        }
+    }
+
+    dependencies {
+        implementation 'org.springframework.boot:spring-boot-starter-web'
+        implementation 'org.springframework.kafka:spring-kafka'
+        testImplementation 'org.springframework.boot:spring-boot-starter-test'
+        implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-csv:2.13.4'
+    }
+
+    tasks.named('test') {
+        useJUnitPlatform()
+    }
+}
+
+bootJar {
+    enabled = false
+}
+
+bootBuildImage {
+    enabled = false
 }

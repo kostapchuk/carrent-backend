@@ -1,0 +1,28 @@
+ext {
+    springDocVersion = '1.6.12'
+    testContainersVersion = '1.17.5'
+}
+
+dependencies {
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.springframework.boot:spring-boot-starter-security"
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.apache.commons:commons-lang3:3.12.0"
+    implementation "io.jsonwebtoken:jjwt:0.9.1"
+    implementation "org.springdoc:springdoc-openapi-ui:${springDocVersion}"
+    implementation "org.springdoc:springdoc-openapi-security:${springDocVersion}"
+    implementation "com.cloudinary:cloudinary-http44:1.33.0"
+    implementation "io.micrometer:micrometer-registry-prometheus"
+    implementation "org.flywaydb:flyway-core"
+    testImplementation "org.testcontainers:postgresql:${testContainersVersion}"
+    testImplementation "org.testcontainers:junit-jupiter:${testContainersVersion}"
+    runtimeOnly "org.postgresql:postgresql"
+}
+
+bootJar {
+    enabled = true
+}
+
+bootBuildImage {
+    imageName = 'qjnzero/' + rootProject.name + '-' + project.name
+}

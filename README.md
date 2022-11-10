@@ -1,31 +1,17 @@
 # CarRent Backend Application
 
-The application helps people to rent cars.
+Rest API for carrent-fronted client.
+It allows users to rent/book cars, update their profiles and see the history of rides.
+There's an admin dashboard about the clients to verify the passport and driving license of each user.
 
 ## Tech stack
-### Backend
 * Java 17
-* Spring Boot (MVC, JPA, Security)
-* Kafka
+* Spring Boot
 * JWT
-### Data
-* AWS S3 - as image storage
-* AWS RDS(PostgreSQL) - as production DB
-* PostgreSQL - as development DB
-* Redis - as cache
-* MongoDB - as session storage
-* Flyway - as migration tool
+* Cloudinary
+* Flyway
 ### Infrastructure
-* Docker - for containerizing 
-* Swagger - as API documentation
-* Prometheus - as monitoring tool
-* Grafana - as monitoring tool
-
-
-## --- In the future ---
-- [ ] Reactive Streams
-- [ ] ELK stack
-- [ ] Split into microservices
-- [ ] Kubernetes
-- [ ] Helm
-- [ ] Terraform
+* Docker
+* Swagger
+* Prometheus
+* Grafana
