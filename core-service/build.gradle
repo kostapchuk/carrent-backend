@@ -1,5 +1,6 @@
 ext {
     springDocVersion = '1.6.12'
+    testContainersVersion = '1.17.5'
 }
 
 dependencies {
@@ -13,8 +14,8 @@ dependencies {
     implementation "com.cloudinary:cloudinary-http44:1.33.0"
     implementation "io.micrometer:micrometer-registry-prometheus"
     implementation "org.flywaydb:flyway-core"
-    testImplementation "org.testcontainers:postgresql:1.17.5"
-    testImplementation "org.testcontainers:junit-jupiter:1.17.5"
+    testImplementation "org.testcontainers:postgresql:${testContainersVersion}"
+    testImplementation "org.testcontainers:junit-jupiter:${testContainersVersion}"
     runtimeOnly "org.postgresql:postgresql"
 }
 
