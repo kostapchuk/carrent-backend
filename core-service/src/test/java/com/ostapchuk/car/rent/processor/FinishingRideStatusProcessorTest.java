@@ -5,9 +5,7 @@ import com.ostapchuk.car.rent.dto.order.OrderDto;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.CarStatus;
 import com.ostapchuk.car.rent.entity.Order;
-import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
-import com.ostapchuk.car.rent.entity.UserStatus;
 import com.ostapchuk.car.rent.exception.CarUnavailableException;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
@@ -126,10 +124,7 @@ class FinishingRideStatusProcessorTest {
             .phone("+375332225544")
             .email("user@mailer.com")
             .password("passwordHash1231234")
-            .role(Role.USER)
-            .status(UserStatus.ACTIVE)
             .verified(true)
-            .balance(BigDecimal.ZERO)
             .passportImgUrl("someurl")
             .drivingLicenseImgUrl("someurl")
             .build();

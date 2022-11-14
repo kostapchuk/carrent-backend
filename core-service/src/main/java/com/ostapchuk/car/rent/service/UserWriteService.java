@@ -14,10 +14,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 import static com.ostapchuk.car.rent.entity.Role.USER;
-import static com.ostapchuk.car.rent.entity.UserStatus.ACTIVE;
 import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
-import static java.math.BigDecimal.ZERO;
 
 @Service
 public record UserWriteService(
@@ -57,10 +55,8 @@ public record UserWriteService(
                 .lastName(userDto.lastName())
                 .email(userDto.email())
                 .phone(userDto.phone())
-                .balance(ZERO)
                 .password(passwordEncoder.encode(userDto.password()))
                 .role(USER)
-                .status(ACTIVE)
                 .verified(FALSE)
                 .build();
     }

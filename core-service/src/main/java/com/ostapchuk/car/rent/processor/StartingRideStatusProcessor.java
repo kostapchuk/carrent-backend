@@ -12,7 +12,6 @@ import com.ostapchuk.car.rent.service.OrderWriteService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -57,7 +56,6 @@ public class StartingRideStatusProcessor extends RideStatusProcessor {
                 Order.builder()
                         .user(user)
                         .uuid(UUID.randomUUID().toString())
-                        .start(LocalDateTime.now())
                         .car(car)
                         .status(statusConverter.toOrderStatus(orderDto.carStatus()))
                         .build();

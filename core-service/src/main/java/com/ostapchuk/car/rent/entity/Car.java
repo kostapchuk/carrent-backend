@@ -47,6 +47,7 @@ public class Car {
     @Column(name = "book_price_per_hour", nullable = false)
     private BigDecimal bookPricePerHour;
 
+    @Builder.Default
     @Enumerated(STRING)
     @Column(name = "status", nullable = false)
     private CarStatus status = CarStatus.UNAVAILABLE;

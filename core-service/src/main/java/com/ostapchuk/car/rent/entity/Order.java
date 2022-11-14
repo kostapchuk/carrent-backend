@@ -47,6 +47,7 @@ public class Order {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Builder.Default
     @Column(name = "start", nullable = false)
     private LocalDateTime start = LocalDateTime.now();
 
