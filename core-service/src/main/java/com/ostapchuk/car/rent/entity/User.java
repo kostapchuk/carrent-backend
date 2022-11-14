@@ -51,14 +51,17 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Builder.Default
     @Enumerated(STRING)
     @Column(name = "role", nullable = false)
     private Role role = Role.USER;
 
+    @Builder.Default
     @Enumerated(STRING)
     @Column(name = "status", nullable = false)
     private UserStatus status = UserStatus.ACTIVE;
 
+    @Builder.Default
     @Column(name = "balance", nullable = false)
     private BigDecimal balance = BigDecimal.ZERO;
 

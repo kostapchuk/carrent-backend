@@ -1,8 +1,6 @@
 package com.ostapchuk.car.rent.repository;
 
-import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
-import com.ostapchuk.car.rent.entity.UserStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -76,10 +74,7 @@ class UserRepositoryTest {
             .phone("+375332225544")
             .email("user@mailer.com")
             .password("passwordHash1231234")
-            .role(Role.USER)
-            .status(UserStatus.ACTIVE)
             .verified(true)
-            .balance(BigDecimal.ZERO)
             .passportImgUrl("someurl")
             .drivingLicenseImgUrl("someurl")
             .build();
