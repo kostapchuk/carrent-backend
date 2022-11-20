@@ -47,17 +47,17 @@ jobs:
     - name: 'Run chmod to make gradlew executable'
       run: chmod +x ./gradlew
     - name: 'Run Coverage'
-      run: ./gradlew jacocoTestCoverageVerification
+      run: ./gradlew core-service:jacocoTestCoverageVerification
 
     - name: 'Run chmod to make gradlew executable'
       run: chmod +x ./gradlew
     - name: 'Run SonarLintMain'
-      run: ./gradlew sonarlintMain
+      run: ./gradlew core-service:sonarlintMain
 
     - name: 'Run chmod to make gradlew executable'
       run: chmod +x ./gradlew
     - name: 'Run SonarLintTest'
-      run: ./gradlew sonarlintTest
+      run: ./gradlew core-service:sonarlintTest
 
 #    - name: Upload Report
 #      uses: 'actions/upload-artifact@v2'
