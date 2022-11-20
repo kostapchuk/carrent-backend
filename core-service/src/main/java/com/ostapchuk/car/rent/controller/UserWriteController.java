@@ -39,6 +39,7 @@ public class UserWriteController {
         userWriteService.payDebt(id);
     }
 
+    // TODO: 20.11.2022 use Enum type in request
     @PatchMapping(path = "/api/v1/users/{id}/passport", consumes = "multipart/form-data")
     @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public CompletableFuture<ResultDto> uploadPassport(@RequestPart("file") final MultipartFile file,
@@ -46,6 +47,7 @@ public class UserWriteController {
         return userWriteService.updatePassportDocument(file, userId);
     }
 
+    // TODO: 20.11.2022 use Enum type in request
     @PatchMapping(path = "/api/v1/users/{id}/driving_license", consumes = "multipart/form-data")
     @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public CompletableFuture<ResultDto> uploadDrivingLicense(@RequestPart("file") final MultipartFile file,

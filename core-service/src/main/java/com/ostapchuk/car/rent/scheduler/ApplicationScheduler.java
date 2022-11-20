@@ -1,4 +1,4 @@
-package com.ostapchuk.car.rent.schedule;
+package com.ostapchuk.car.rent.scheduler;
 
 import com.ostapchuk.car.rent.service.FileService;
 import lombok.RequiredArgsConstructor;
@@ -6,11 +6,11 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 /**
- * Cloudinary scheduler consists of tasks to be done repeatedly
+ * Scheduler consists of tasks to be done repeatedly
  */
 @Component
 @RequiredArgsConstructor
-public class CloudinaryScheduler {
+public class ApplicationScheduler {
 
     private final FileService fileService;
 

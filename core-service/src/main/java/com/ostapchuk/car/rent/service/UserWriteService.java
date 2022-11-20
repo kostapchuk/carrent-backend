@@ -6,8 +6,10 @@ import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.mapper.UserMapper;
 import com.ostapchuk.car.rent.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.concurrent.CompletableFuture;
@@ -16,12 +18,14 @@ import java.util.function.Consumer;
 import static java.lang.Boolean.TRUE;
 
 @Service
-public record UserWriteService(
-        UserRepository userRepository,
-        PasswordEncoder passwordEncoder,
-        FileService fileService,
-        UserMapper userMapper
-) {
+@Transactional
+@RequiredArgsConstructor
+public class UserWriteService {
+
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final FileService fileService;
+    private final UserMapper userMapper;
 
     public ResultDto create(final RegisterUserDto userDto) {
         if (userRepository.existsByEmail(userDto.email())) {

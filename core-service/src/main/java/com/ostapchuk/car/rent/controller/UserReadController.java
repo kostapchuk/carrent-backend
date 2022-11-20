@@ -20,10 +20,9 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserReadController {
 
-    private final UserReadService userReadService;
     private final RideService rideService;
+    private final UserReadService userReadService;
 
-    // TODO: 3/18/2022 check the same user
     @GetMapping("/api/v1/users/{id}/rides")
     @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public List<RideDto> findAllRidesById(@PathVariable final Long id) {
