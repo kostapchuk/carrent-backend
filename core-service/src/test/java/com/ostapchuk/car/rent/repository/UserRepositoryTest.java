@@ -41,6 +41,7 @@ class UserRepositoryTest {
     }
 
     @Test
+        // TODO: 20.11.2022  
 //    @Sql(scripts = {"/insert-user.sql"})
     void resetBalance_ShouldReset() {
         // given
