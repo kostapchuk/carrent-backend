@@ -17,5 +17,4 @@ public record AuthenticationController(AuthenticationService authenticationServi
         return authenticationService.login(request);
     }
 
-    // TODO: 20.11.2022 refresh token
 }

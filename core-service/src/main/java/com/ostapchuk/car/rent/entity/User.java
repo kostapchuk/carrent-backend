@@ -26,10 +26,10 @@ import static javax.persistence.EnumType.STRING;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = User.USER)
+@Table(name = User.USER_TABLE)
 public class User {
 
-    static final String USER = "user";
+    static final String USER_TABLE = "user";
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_id_seq")
@@ -75,6 +75,6 @@ public class User {
     @Column(name = "driving_license_img_url")
     private String drivingLicenseImgUrl;
 
-    @OneToMany(mappedBy = USER)
+    @OneToMany(mappedBy = USER_TABLE)
     private List<Order> orders;
 }

@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.service;
 
-import com.ostapchuk.car.rent.dto.ResultDto;
+import com.ostapchuk.car.rent.dto.GeneralResponse;
 import com.ostapchuk.car.rent.dto.user.RegisterUserDto;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
@@ -27,14 +27,14 @@ public class UserWriteService {
     private final FileService fileService;
     private final UserMapper userMapper;
 
-    public ResultDto create(final RegisterUserDto userDto) {
+    public GeneralResponse create(final RegisterUserDto userDto) {
         if (userRepository.existsByEmail(userDto.email())) {
             throw new EntityNotFoundException("User already exists");
         }
         final User user = userMapper.toEntity(userDto);
         user.setPassword(passwordEncoder.encode(userDto.password()));
         userRepository.save(user);
-        return new ResultDto("Successfully created your account, thank you!", TRUE);
+        return new GeneralResponse("Successfully created your account, thank you!", TRUE);
     }
 
     public void payDebt(final Long userId) {
@@ -45,19 +45,19 @@ public class UserWriteService {
         userRepository.deleteById(id);
     }
 
-    public CompletableFuture<ResultDto> updatePassportDocument(final MultipartFile file, final Long userId) {
+    public CompletableFuture<GeneralResponse> updatePassportDocument(final MultipartFile file, final Long userId) {
         return updateDocument(file, url -> userRepository.updatePassportUrl(userId, url));
     }
 
-    public CompletableFuture<ResultDto> updateDrivingLicenseDocument(final MultipartFile file, final Long userId) {
+    public CompletableFuture<GeneralResponse> updateDrivingLicenseDocument(final MultipartFile file, final Long userId) {
         return updateDocument(file, url -> userRepository.updateDrivingLicenseUrl(userId, url));
     }
 
-    private CompletableFuture<ResultDto> updateDocument(final MultipartFile file, final Consumer<String> updateImgUrl) {
+    private CompletableFuture<GeneralResponse> updateDocument(final MultipartFile file, final Consumer<String> updateImgUrl) {
         return fileService.upload(file)
                 .thenApply(url -> {
                     url.ifPresent(updateImgUrl);
-                    return new ResultDto("Successfully uploaded the file", TRUE);
+                    return new GeneralResponse("Successfully uploaded the file", TRUE);
                 });
     }
 }

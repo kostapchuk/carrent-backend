@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.controller;
 
-import com.ostapchuk.car.rent.dto.ride.RideDto;
+import com.ostapchuk.car.rent.dto.ride.RideResponse;
 import com.ostapchuk.car.rent.dto.user.UserDto;
 import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.UserStatus;
@@ -25,7 +25,7 @@ public class UserReadController {
 
     @GetMapping("/api/v1/users/{id}/rides")
     @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
-    public List<RideDto> findAllRidesById(@PathVariable final Long id) {
+    public List<RideResponse> findAllRidesById(@PathVariable final Long id) {
         return rideService.findAllRidesByUserId(id);
     }
 

@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.processor;
 
 import com.ostapchuk.car.rent.converter.StatusConverter;
-import com.ostapchuk.car.rent.dto.order.OrderDto;
+import com.ostapchuk.car.rent.dto.order.OrderRequest;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.CarStatus;
 import com.ostapchuk.car.rent.entity.Order;
@@ -53,11 +53,11 @@ class FinishingRideStatusProcessorTest {
 
     @BeforeAll
     protected static void beforeAll() {
-        defaultOrderDto = new OrderDto(defaultUser.getId(), defaultCar.getId(), CarStatus.IN_BOOKING);
+        defaultOrderRequest = new OrderRequest(defaultUser.getId(), defaultCar.getId(), CarStatus.IN_BOOKING);
     }
 
     /**
-     * {@link FinishingRideStatusProcessor#process(OrderDto)}
+     * {@link FinishingRideStatusProcessor#process(OrderRequest)}
      */
     @Test
     @DisplayName("Car is in rent by the user. The user is active, verified and balance is positive. Should be able to" +
@@ -67,46 +67,46 @@ class FinishingRideStatusProcessorTest {
         final Order order = new Order();
 
         // when
-        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.empty());
-        when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+        when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.empty());
-        when(carReadService.findFinishable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(Optional.of(
+        when(carReadService.findFinishable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(Optional.of(
                 defaultCar));
         when(userReadService.findVerifiedById(defaultUser.getId())).thenReturn(defaultUser);
         when(orderReadService.findExistingByUserAndCar(defaultUser, defaultCar)).thenReturn(order);
         when(priceService.calculateRidePrice(order, defaultCar)).thenReturn(new BigDecimal("10"));
 
         // verify
-        startingRideStatusProcessor.process(defaultOrderDto);
+        startingRideStatusProcessor.process(defaultOrderRequest);
         verify(userReadService, times(1)).findVerifiedById(defaultUser.getId());
     }
 
     /**
-     * {@link FinishingRideStatusProcessor#process(OrderDto)}
+     * {@link FinishingRideStatusProcessor#process(OrderRequest)}
      */
     @Test
     @DisplayName("The car was already taken by another user or the car status and order status are invalid to process" +
             " the request")
     void process_CarTakenOrCarStatusAndOrderStatusIsInvalid_ShouldNotProcess() {
         // when
-        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.empty());
-        when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+        when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.empty());
-        when(carReadService.findFinishable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+        when(carReadService.findFinishable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.empty());
 
         // verify
         final CarUnavailableException thrown = assertThrows(
                 CarUnavailableException.class,
-                () -> startingRideStatusProcessor.process(defaultOrderDto)
+                () -> startingRideStatusProcessor.process(defaultOrderRequest)
         );
         assertEquals("Sorry, car is not available", thrown.getMessage());
         verify(userReadService, never()).findVerifiedById(defaultUser.getId());
     }
 
-    private static OrderDto defaultOrderDto;
+    private static OrderRequest defaultOrderRequest;
     private static final Car defaultCar = Car.builder()
             .id(1)
             .mark("BMW")

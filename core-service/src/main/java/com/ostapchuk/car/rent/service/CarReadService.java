@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.service;
 
-import com.ostapchuk.car.rent.dto.car.CarDto;
+import com.ostapchuk.car.rent.dto.car.CarResponse;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.CarStatus;
 import com.ostapchuk.car.rent.entity.Order;
@@ -31,14 +31,14 @@ public class CarReadService {
     private final UserReadService userReadService;
     private final CarMapper carMapper;
 
-    public CarDto findById(final Integer id) {
+    public CarResponse findById(final Integer id) {
         return carMapper.toDto(
                 carRepository.findById(id)
                         .orElseThrow(() -> new EntityNotFoundException("Could not find car with id: " + id))
         );
     }
 
-    public List<CarDto> findAllFree() {
+    public List<CarResponse> findAllFree() {
         return carRepository.findAllByStatusOrderById(FREE)
                 .stream()
                 .map(carMapper::toDto)
@@ -68,7 +68,7 @@ public class CarReadService {
                 );
     }
 
-    public List<CarDto> findAllFreeForUser(final Long userId) {
+    public List<CarResponse> findAllFreeForUser(final Long userId) {
         final List<Car> freeCars = new ArrayList<>();
         orderRepository.findFirstByUserAndEndingIsNull(userReadService.findById(userId))
                 .map(Order::getCar)

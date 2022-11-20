@@ -2,7 +2,7 @@ package com.ostapchuk.car.rent.dto.car;
 
 import java.math.BigDecimal;
 
-public record CarDto(
+public record CarResponse(
         Integer id,
         String mark,
         String model,
