@@ -24,6 +24,9 @@ dependencies {
     runtimeOnly "org.postgresql:postgresql"
 }
 
+sonarlintMain.enabled = false
+sonarlintTest.enabled = false
+
 jacocoTestCoverageVerification {
     violationRules {
         rule {
