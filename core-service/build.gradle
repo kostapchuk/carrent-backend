@@ -69,7 +69,6 @@ tasks.create(name: "testCoverage", type: JacocoReport, dependsOn: "test") {
 
 sonarlint {
     ignoreFailures = false
-
 }
 
 bootJar {
