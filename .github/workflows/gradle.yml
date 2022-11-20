@@ -38,24 +38,20 @@ jobs:
       with:
         arguments: build -x test -x sonarlintMain -x sonarlintTest
 
+    - name: 'Checkout Repository'
+      uses: actions/checkout@v3
+
+    - name: 'Dependency Review'
+      uses: actions/dependency-review-action@v1
+
+    - name: 'Run Coverage'
+      run: ./gradlew jacocoTestCoverageVerification
+
     - name: 'Run SonarLintMain'
       run: ./gradlew sonarlintMain
 
     - name: 'Run SonarLintTest'
       run: ./gradlew sonarlintTest
-
-#    - name: 'Checkout Repository'
-#      uses: actions/checkout@v3
-#    - name: 'Dependency Review'
-#      uses: actions/dependency-review-action@v1
-#
-#    - name: Run tests
-#      uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-#      with:
-#        arguments: test
-
-#    - name: Run Coverage
-#      run: ./gradlew testCoverage
 
 #    - name: Upload Report
 #      uses: 'actions/upload-artifact@v2'
