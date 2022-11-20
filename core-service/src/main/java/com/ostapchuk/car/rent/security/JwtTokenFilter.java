@@ -2,7 +2,6 @@ package com.ostapchuk.car.rent.security;
 
 import com.ostapchuk.car.rent.exception.JwtAuthenticationException;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -11,8 +10,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -31,9 +32,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
     }
 
     @Override
-    @SneakyThrows
     protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
-                                    final FilterChain filterChain) {
+                                    final FilterChain filterChain) throws ServletException, IOException {
         try {
             final String token = jwtTokenProvider.resolveToken(request);
             if (token != null && jwtTokenProvider.validateToken(token)) {

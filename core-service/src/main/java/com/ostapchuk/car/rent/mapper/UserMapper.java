@@ -1,5 +1,6 @@
 package com.ostapchuk.car.rent.mapper;
 
+import com.ostapchuk.car.rent.dto.user.RegisterUserDto;
 import com.ostapchuk.car.rent.dto.user.UserDto;
 import com.ostapchuk.car.rent.entity.User;
 import org.springframework.stereotype.Component;
@@ -22,5 +23,14 @@ public record UserMapper() {
                 user.getPassportImgUrl(),
                 user.getDrivingLicenseImgUrl()
         );
+    }
+
+    public User toEntity(final RegisterUserDto userDto) {
+        return User.builder()
+                .firstName(userDto.firstName())
+                .lastName(userDto.lastName())
+                .email(userDto.email())
+                .phone(userDto.phone())
+                .build();
     }
 }

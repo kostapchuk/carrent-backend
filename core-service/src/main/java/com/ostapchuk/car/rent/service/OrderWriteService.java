@@ -4,8 +4,7 @@ import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional

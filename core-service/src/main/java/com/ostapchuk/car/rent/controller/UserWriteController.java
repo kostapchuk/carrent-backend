@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 @RestController
 @RequiredArgsConstructor
 public class UserWriteController {
+
     private final UserWriteService userWriteService;
 
     @PostMapping("/api/v1/users")
@@ -27,26 +28,26 @@ public class UserWriteController {
     }
 
     @DeleteMapping("/api/v1/users/{id}")
-    @PreAuthorize("hasAuthority('users:delete')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public void delete(@PathVariable final Long id) {
         userWriteService.deleteById(id);
     }
 
     @PostMapping("/api/v1/users/{id}/pay")
-    @PreAuthorize("hasAuthority('users:read')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public void payDebt(@PathVariable final Long id) {
         userWriteService.payDebt(id);
     }
 
     @PatchMapping(path = "/api/v1/users/{id}/passport", consumes = "multipart/form-data")
-    @PreAuthorize("hasAuthority('users:read')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public CompletableFuture<ResultDto> uploadPassport(@RequestPart("file") final MultipartFile file,
                                                        @PathVariable("id") final Long userId) {
         return userWriteService.updatePassportDocument(file, userId);
     }
 
     @PatchMapping(path = "/api/v1/users/{id}/driving_license", consumes = "multipart/form-data")
-    @PreAuthorize("hasAuthority('users:read')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public CompletableFuture<ResultDto> uploadDrivingLicense(@RequestPart("file") final MultipartFile file,
                                                              @PathVariable("id") final Long userId) {
         return userWriteService.updateDrivingLicenseDocument(file, userId);

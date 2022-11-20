@@ -14,9 +14,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 
 import java.util.Map;
 
-import static org.springframework.http.HttpMethod.GET;
-import static org.springframework.http.HttpMethod.POST;
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -26,24 +23,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtConfigurer jwtConfigurer;
     private final Map<HttpMethod, String[]> publicEndpoints;
 
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
     @Override
     protected void configure(final HttpSecurity http) throws Exception {
-        http
+        permitAllForPublicEndpoints(http)
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers(POST, publicEndpoints.get(POST)).permitAll()
-                .antMatchers(GET, publicEndpoints.get(GET)).permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
                 .apply(jwtConfigurer);
     }
 
-    @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+    private HttpSecurity permitAllForPublicEndpoints(final HttpSecurity httpSecurity) throws Exception {
+        final var authorizedRequests = httpSecurity.authorizeRequests();
+        publicEndpoints.forEach((key, value) -> authorizedRequests.antMatchers(key, value).permitAll());
+        return authorizedRequests.and();
     }
 }

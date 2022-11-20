@@ -1,7 +1,6 @@
 package com.ostapchuk.car.rent.security;
 
 import com.ostapchuk.car.rent.entity.User;
-import com.ostapchuk.car.rent.entity.UserStatus;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,8 +8,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
-@RequiredArgsConstructor
+import static com.ostapchuk.car.rent.entity.UserStatus.ACTIVE;
+
 @Getter
+@RequiredArgsConstructor
 public class SecurityUser implements UserDetails {
 
     private final String username;
@@ -20,11 +21,12 @@ public class SecurityUser implements UserDetails {
 
     public static UserDetails fromUser(final User user) {
         return new org.springframework.security.core.userdetails.User(
-                user.getEmail(), user.getPassword(),
-                user.getStatus().equals(UserStatus.ACTIVE),
-                user.getStatus().equals(UserStatus.ACTIVE),
-                user.getStatus().equals(UserStatus.ACTIVE),
-                user.getStatus().equals(UserStatus.ACTIVE),
+                user.getEmail(),
+                user.getPassword(),
+                ACTIVE.equals(user.getStatus()),
+                ACTIVE.equals(user.getStatus()),
+                ACTIVE.equals(user.getStatus()),
+                ACTIVE.equals(user.getStatus()),
                 user.getRole().getAuthorities()
         );
     }
