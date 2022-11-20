@@ -1,3 +1,7 @@
+plugins {
+    id "name.remal.sonarlint" version "1.5.0"
+}
+
 ext {
     springDocVersion = '1.6.12'
     testContainersVersion = '1.17.5'
@@ -18,6 +22,53 @@ dependencies {
     testImplementation "org.testcontainers:postgresql:${testContainersVersion}"
     testImplementation "org.testcontainers:junit-jupiter:${testContainersVersion}"
     runtimeOnly "org.postgresql:postgresql"
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.2
+            }
+        }
+    }
+}
+
+tasks.create(name: "testCoverage", type: JacocoReport, dependsOn: "test") {
+
+    group = "Reporting"
+    description = "Generate Jacoco coverage reports for the test build."
+
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
+
+    def excludes = [
+            '**/*Test*.*',
+            '**/actions/*.*',
+            '**/core/*.*',
+            '**/markers/*.*',
+            '**/services/**/*.*',
+            '**/toolwindow/*.*',
+            '**/utils/*.*'
+    ]
+
+    def javaClasses = fileTree(dir: "${buildDir}/classes/java/main", excludes: excludes)
+    def kotlinClasses = fileTree(dir: "${buildDir}/classes/kotlin/main", excludes: excludes)
+    classDirectories.from = files([javaClasses, kotlinClasses])
+
+    sourceDirectories.from = files([
+            "$project.projectDir/src/main/java",
+            "$project.projectDir/src/main/kotlin",
+            "$buildDir/generated/source/kapt/test"
+    ])
+
+    executionData.from = files("${project.buildDir}/jacoco/test.exec")
+}
+
+sonarlint {
+    ignoreFailures = false
 }
 
 bootJar {
