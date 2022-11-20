@@ -20,28 +20,28 @@ public record ExceptionAdviser() {
     @ExceptionHandler({EntityNotFoundException.class, OrderCreationException.class, BalanceException.class,
             UserUnverifiedException.class, CarUnavailableException.class})
     public ErrorResponseDto entityNotFoundException(final RuntimeException ex) {
-        log.error(ex.getMessage());
+        log.error(ex.getMessage(), ex);
         return new ErrorResponseDto(ex.getMessage(), BAD_REQUEST.value());
     }
 
     @ResponseStatus(FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
     public ErrorResponseDto accessDeniedException(final AccessDeniedException ex) {
-        log.error(ex.getMessage());
+        log.error(ex.getMessage(), ex);
         return new ErrorResponseDto(ex.getMessage(), FORBIDDEN.value());
     }
 
     @ResponseStatus(UNAUTHORIZED)
     @ExceptionHandler(JwtAuthenticationException.class)
     public ErrorResponseDto jwtAuthenticationException(final JwtAuthenticationException ex) {
-        log.error(ex.getMessage());
+        log.error(ex.getMessage(), ex);
         return new ErrorResponseDto(ex.getMessage(), UNAUTHORIZED.value());
     }
 
     @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Throwable.class)
     public ErrorResponseDto generalException(final Throwable t) {
-        log.error(t.getMessage());
-        return new ErrorResponseDto("Some error occurred: " + t.getMessage(), INTERNAL_SERVER_ERROR.value());
+        log.error(t.getMessage(), t);
+        return new ErrorResponseDto("Some error occurred: " + t, INTERNAL_SERVER_ERROR.value());
     }
 }

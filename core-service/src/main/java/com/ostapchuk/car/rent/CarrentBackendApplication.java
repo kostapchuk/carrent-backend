@@ -5,7 +5,10 @@ import com.ostapchuk.car.rent.properties.JwtProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
+
+@EnableScheduling
 @SpringBootApplication
 @EnableConfigurationProperties({JwtProperties.class, CloudinaryProperties.class})
 public class CarrentBackendApplication {

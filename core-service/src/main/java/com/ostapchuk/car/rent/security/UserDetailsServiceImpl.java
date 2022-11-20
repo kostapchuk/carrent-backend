@@ -1,7 +1,6 @@
 package com.ostapchuk.car.rent.security;
 
-import com.ostapchuk.car.rent.entity.User;
-import com.ostapchuk.car.rent.repository.UserRepository;
+import com.ostapchuk.car.rent.service.UserReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,12 +13,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final UserReadService userReadService;
 
     @Override
     public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
-        final User user = userRepository.findByEmail(email).orElseThrow(() ->
-                new UsernameNotFoundException("User does not exist"));
-        return SecurityUser.fromUser(user);
+        return SecurityUser.fromUser(userReadService.findByEmail(email));
     }
 }

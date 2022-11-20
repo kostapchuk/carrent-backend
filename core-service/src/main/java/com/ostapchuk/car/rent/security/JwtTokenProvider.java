@@ -27,11 +27,9 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final UserDetailsService userDetailsService;
-
-    private final JwtProperties jwtProperties;
-
     private String secretKey;
+    private final JwtProperties jwtProperties;
+    private final UserDetailsService userDetailsService;
 
     @PostConstruct
     protected void init() {

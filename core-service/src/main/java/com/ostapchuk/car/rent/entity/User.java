@@ -65,6 +65,7 @@ public class User {
     @Column(name = "balance", nullable = false)
     private BigDecimal balance = BigDecimal.ZERO;
 
+    @Builder.Default
     @Column(name = "verified", nullable = false)
     private boolean verified = false;
 

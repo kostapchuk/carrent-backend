@@ -17,7 +17,7 @@ public class OrderWriteController {
     private final StartingRideStatusProcessor startingRideStatusProcessor;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('users:read')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public void save(@RequestBody final OrderDto orderDto) {
         startingRideStatusProcessor.process(orderDto);
     }

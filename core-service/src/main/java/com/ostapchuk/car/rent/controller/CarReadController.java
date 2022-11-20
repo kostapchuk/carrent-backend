@@ -15,11 +15,9 @@ public record CarReadController(CarReadService carReadService) {
 
     @GetMapping("/api/v1/cars/free")
     public List<CarDto> findAllFree(@RequestParam(value = "userId", required = false) final Optional<Long> userId) {
-        if (userId.isPresent()) {
-            return carReadService.findAllFreeForUser(userId.get());
-        } else {
-            return carReadService.findAllFree();
-        }
+        return userId.isPresent()
+                ? carReadService.findAllFreeForUser(userId.get())
+                : carReadService.findAllFree();
     }
 
     @GetMapping("/api/v1/cars/{id}")

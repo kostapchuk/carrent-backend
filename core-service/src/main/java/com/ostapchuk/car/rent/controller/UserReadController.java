@@ -20,42 +20,41 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserReadController {
 
-    private final UserReadService userReadService;
     private final RideService rideService;
+    private final UserReadService userReadService;
 
-    // TODO: 3/18/2022 check the same user
     @GetMapping("/api/v1/users/{id}/rides")
-    @PreAuthorize("hasAuthority('users:read')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public List<RideDto> findAllRidesById(@PathVariable final Long id) {
         return rideService.findAllRidesByUserId(id);
     }
 
     @GetMapping("/api/v1/users/{id}/balance")
-    @PreAuthorize("hasAuthority('users:read')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public BigDecimal findBalanceById(@PathVariable final Long id) {
         return userReadService.findBalanceById(id);
     }
 
     @GetMapping("/api/v1/users")
-    @PreAuthorize("hasAuthority('users:write')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_WRITE.getName())")
     public List<UserDto> findAll() {
         return userReadService.findAll();
     }
 
     @GetMapping("/api/v1/users/roles")
-    @PreAuthorize("hasAuthority('users:write')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_WRITE.getName())")
     public Set<Role> findRoles() {
         return userReadService.findAllRoles();
     }
 
     @GetMapping("/api/v1/users/statuses")
-    @PreAuthorize("hasAuthority('users:write')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_WRITE.getName())")
     public Set<UserStatus> findStatuses() {
         return userReadService.findAllStatuses();
     }
 
     @GetMapping("/api/v1/users/{id}/debt")
-    @PreAuthorize("hasAuthority('users:read')")
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public BigDecimal findDebt(@PathVariable final Long id) {
         return userReadService.findDept(id);
     }

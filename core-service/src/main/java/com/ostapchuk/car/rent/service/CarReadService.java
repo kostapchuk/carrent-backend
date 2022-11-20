@@ -10,6 +10,7 @@ import com.ostapchuk.car.rent.repository.CarRepository;
 import com.ostapchuk.car.rent.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ import static com.ostapchuk.car.rent.entity.CarStatus.IN_RENT;
 import static com.ostapchuk.car.rent.entity.CarStatus.IN_RENT_PAUSED;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CarReadService {
 

@@ -12,6 +12,7 @@ import com.ostapchuk.car.rent.repository.UserRepository;
 import com.ostapchuk.car.rent.util.Constant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,6 +21,7 @@ import java.util.Set;
 import static java.math.BigDecimal.ZERO;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserReadService {
 
