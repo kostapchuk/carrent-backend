@@ -46,7 +46,7 @@ public class CorsFilterConfig {
         config.setAllowCredentials(TRUE);
         config.setAllowedOrigins(List.of(paypalUrl, frontendUrl));
         config.setAllowedMethods(List.of(OPTIONS.name(), GET.name(), POST.name(), PATCH.name(), DELETE.name()));
-        config.setAllowedHeaders(SINGLETON_STAR); // TODO: 04.11.2022  
+        config.setAllowedHeaders(SINGLETON_STAR);
         return config;
     }
 }

@@ -1,6 +1,5 @@
 package com.ostapchuk.car.rent.entity;
 
-// TODO: 20.11.2022 move from permissions to role only 
 public enum Permission {
 
     USERS_READ("users:read"),

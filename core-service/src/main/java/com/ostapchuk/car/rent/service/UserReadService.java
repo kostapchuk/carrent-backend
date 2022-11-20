@@ -77,10 +77,5 @@ public class UserReadService {
         if (!user.isVerified()) {
             throw new UserUnverifiedException("You are not verified. Please, wait for the verification");
         }
-        // todo: enable this only when user tries to change car's status
-//        if (person.getBalance()
-//                .compareTo(ZERO) < Constant.ZERO_INT) {
-//            throw new BalanceException("The balance is negative, please, pay the debt");
-//        }
     }
 }
