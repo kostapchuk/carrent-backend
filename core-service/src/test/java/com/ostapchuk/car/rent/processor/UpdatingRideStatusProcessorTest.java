@@ -1,13 +1,11 @@
 package com.ostapchuk.car.rent.processor;
 
 import com.ostapchuk.car.rent.converter.StatusConverter;
-import com.ostapchuk.car.rent.dto.order.OrderDto;
+import com.ostapchuk.car.rent.dto.order.OrderRequest;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.CarStatus;
 import com.ostapchuk.car.rent.entity.Order;
-import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
-import com.ostapchuk.car.rent.entity.UserStatus;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
@@ -53,32 +51,32 @@ class UpdatingRideStatusProcessorTest {
 
     @BeforeAll
     protected static void beforeAll() {
-        defaultOrderDto = new OrderDto(defaultUser.getId(), defaultCar.getId(), CarStatus.IN_BOOKING);
+        defaultOrderRequest = new OrderRequest(defaultUser.getId(), defaultCar.getId(), CarStatus.IN_BOOKING);
     }
 
     /**
-     * {@link UpdatingRideStatusProcessor#process(OrderDto)}
+     * {@link UpdatingRideStatusProcessor#process(OrderRequest)}
      */
     @Test
     @DisplayName("Car is in rent by the user. The user is active, verified and balance is positive. Should be able to" +
             " pause rent a ride")
     void process_WhenCarIsInRentAndUserIsVerified_ShouldPauseRent() {
         // when
-        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.empty());
-        when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(Optional.of(
+        when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(Optional.of(
                 defaultCar));
-        when(userReadService.findVerifiedById(defaultOrderDto.userId())).thenReturn(defaultUser);
+        when(userReadService.findVerifiedById(defaultOrderRequest.userId())).thenReturn(defaultUser);
         when(orderReadService.findExistingByUserAndCar(defaultUser, defaultCar)).thenReturn(new Order());
         when(orderWriteService.save(any(Order.class))).thenReturn(new Order());
 
         // verify
-        startingRideStatusProcessor.process(defaultOrderDto);
+        startingRideStatusProcessor.process(defaultOrderRequest);
         verify(userReadService, times(1)).findVerifiedById(anyLong());
         verify(orderWriteService, times(2)).save(any(Order.class));
     }
 
-    private static OrderDto defaultOrderDto;
+    private static OrderRequest defaultOrderRequest;
     private static final Car defaultCar = Car.builder()
             .id(1)
             .mark("BMW")
@@ -96,10 +94,7 @@ class UpdatingRideStatusProcessorTest {
             .phone("+375332225544")
             .email("user@mailer.com")
             .password("passwordHash1231234")
-            .role(Role.USER)
-            .status(UserStatus.ACTIVE)
             .verified(true)
-            .balance(BigDecimal.ZERO)
             .passportImgUrl("someurl")
             .drivingLicenseImgUrl("someurl")
             .build();

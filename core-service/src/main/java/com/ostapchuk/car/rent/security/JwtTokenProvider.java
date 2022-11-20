@@ -27,15 +27,13 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
 
-    private final UserDetailsService userDetailsService;
-
-    private final JwtProperties jwtProperties;
-
     private String secretKey;
+    private final JwtProperties jwtProperties;
+    private final UserDetailsService userDetailsService;
 
     @PostConstruct
     protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(jwtProperties.secret().getBytes());
+        secretKey = Base64.getEncoder().encodeToString(jwtProperties.getSecret().getBytes());
     }
 
     public String createToken(final String userName, final String role) {
@@ -71,7 +69,7 @@ public class JwtTokenProvider {
     }
 
     String resolveToken(final HttpServletRequest request) {
-        return request.getHeader(jwtProperties.header());
+        return request.getHeader(jwtProperties.getHeader());
     }
 
     private String retrieveUserName(final String token) {
@@ -84,7 +82,7 @@ public class JwtTokenProvider {
 
     private Date retrieveValidityDate() {
         return Date.from(
-                now().plusSeconds(jwtProperties.accessTokenExpiration().toSeconds()).atZone(ZoneId.systemDefault())
+                now().plusSeconds(jwtProperties.getAccessTokenExpiration().toSeconds()).atZone(ZoneId.systemDefault())
                         .toInstant());
     }
 }

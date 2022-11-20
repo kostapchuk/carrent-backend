@@ -59,6 +59,9 @@ jwt:
 frontend:
   url: ${FRONTEND_LINK}
 
+paypal:
+  url: https://www.sandbox.paypal.com
+
 cloudinary:
   cloud-name: ${CLOUDINARY_CLOUD_NAME}
   api:

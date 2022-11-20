@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.controller;
 
-import com.ostapchuk.car.rent.dto.order.OrderDto;
+import com.ostapchuk.car.rent.dto.order.OrderRequest;
 import com.ostapchuk.car.rent.processor.StartingRideStatusProcessor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,8 +17,8 @@ public class OrderWriteController {
     private final StartingRideStatusProcessor startingRideStatusProcessor;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('users:read')")
-    public void save(@RequestBody final OrderDto orderDto) {
-        startingRideStatusProcessor.process(orderDto);
+    @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
+    public void save(@RequestBody final OrderRequest orderRequest) {
+        startingRideStatusProcessor.process(orderRequest);
     }
 }

@@ -1,8 +1,8 @@
 package com.ostapchuk.car.rent.repository;
 
-import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
-import com.ostapchuk.car.rent.entity.UserStatus;
+import com.ostapchuk.car.rent.properties.CloudinaryProperties;
+import com.ostapchuk.car.rent.properties.JwtProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -27,6 +28,12 @@ class UserRepositoryTest {
     private UserRepository userRepository;
     @Autowired
     private TestEntityManager entityManager;
+    @MockBean
+    private CloudinaryProperties cloudinaryProperties;
+    @MockBean
+    private CloudinaryProperties.CloudinaryApiProperties cloudinaryApiProperties;
+    @MockBean
+    private JwtProperties jwtProperties;
 
     @BeforeEach
     protected void beforeEach() {
@@ -34,6 +41,7 @@ class UserRepositoryTest {
     }
 
     @Test
+        // TODO: 20.11.2022  
 //    @Sql(scripts = {"/insert-user.sql"})
     void resetBalance_ShouldReset() {
         // given
@@ -76,10 +84,7 @@ class UserRepositoryTest {
             .phone("+375332225544")
             .email("user@mailer.com")
             .password("passwordHash1231234")
-            .role(Role.USER)
-            .status(UserStatus.ACTIVE)
             .verified(true)
-            .balance(BigDecimal.ZERO)
             .passportImgUrl("someurl")
             .drivingLicenseImgUrl("someurl")
             .build();
