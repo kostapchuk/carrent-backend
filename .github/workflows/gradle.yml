@@ -44,12 +44,18 @@ jobs:
     - name: 'Dependency Review'
       uses: actions/dependency-review-action@v1
 
+    - name: 'Run chmod to make gradlew executable'
+      run: chmod +x ./gradlew
     - name: 'Run Coverage'
       run: ./gradlew jacocoTestCoverageVerification
 
+    - name: 'Run chmod to make gradlew executable'
+      run: chmod +x ./gradlew
     - name: 'Run SonarLintMain'
       run: ./gradlew sonarlintMain
 
+    - name: 'Run chmod to make gradlew executable'
+      run: chmod +x ./gradlew
     - name: 'Run SonarLintTest'
       run: ./gradlew sonarlintTest
 
