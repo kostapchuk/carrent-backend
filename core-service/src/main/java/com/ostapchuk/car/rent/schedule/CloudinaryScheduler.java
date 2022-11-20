@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @RequiredArgsConstructor
-public class CloudinarySchedule {
+public class CloudinaryScheduler {
 
     private final FileService fileService;
 
