@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.service;
 
-import com.ostapchuk.car.rent.dto.ride.RideDetailsDto;
-import com.ostapchuk.car.rent.dto.ride.RideDto;
+import com.ostapchuk.car.rent.dto.ride.RideDetailsResponse;
+import com.ostapchuk.car.rent.dto.ride.RideResponse;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.User;
@@ -25,7 +25,7 @@ public class RideService {
     private final OrderRepository orderRepository;
     private final PriceService priceService;
 
-    public List<RideDto> findAllRidesByUserId(final Long id) {
+    public List<RideResponse> findAllRidesByUserId(final Long id) {
         final User user = userReadService.findById(id);
         final Map<String, List<Order>> rides = orderRepository.findAllByUserAndEndingIsNotNullOrderByStartAsc(user)
                 .stream()
@@ -33,22 +33,22 @@ public class RideService {
         return processRides(rides);
     }
 
-    private List<RideDto> processRides(final Map<String, List<Order>> rides) {
-        final List<RideDto> ridesDto = new ArrayList<>();
+    private List<RideResponse> processRides(final Map<String, List<Order>> rides) {
+        final List<RideResponse> ridesDto = new ArrayList<>();
         for (final Map.Entry<String, List<Order>> entry : rides.entrySet()) {
-            final List<RideDetailsDto> rideDetailsDtos = new ArrayList<>();
+            final List<RideDetailsResponse> rideDetailsResponses = new ArrayList<>();
             entry.getValue()
-                    .forEach(order -> rideDetailsDtos.add(new RideDetailsDto(order.getStart(), order.getEnding(),
+                    .forEach(order -> rideDetailsResponses.add(new RideDetailsResponse(order.getStart(), order.getEnding(),
                             order.getStatus().toString(), order.getPrice())));
             final Order order = entry.getValue()
                     .get(Constant.ZERO_INT);
             final Car car = order.getCar();
-            ridesDto.add(new RideDto(order.getStart().toLocalDate(), car.getMark(), car.getModel(),
+            ridesDto.add(new RideResponse(order.getStart().toLocalDate(), car.getMark(), car.getModel(),
                     priceService.calculateRidePriceByOrders(entry.getValue()),
-                    retrieveRideTimeByOrders(entry.getValue()), rideDetailsDtos));
+                    retrieveRideTimeByOrders(entry.getValue()), rideDetailsResponses));
         }
         return ridesDto.stream()
-                .sorted(Comparator.comparing(RideDto::date).reversed())
+                .sorted(Comparator.comparing(RideResponse::date).reversed())
                 .toList();
     }
 

@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.processor;
 
 import com.ostapchuk.car.rent.converter.StatusConverter;
-import com.ostapchuk.car.rent.dto.order.OrderDto;
+import com.ostapchuk.car.rent.dto.order.OrderRequest;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.User;
@@ -37,27 +37,27 @@ public class StartingRideStatusProcessor extends RideStatusProcessor {
     }
 
     @Override
-    public void process(final OrderDto orderDto) {
-        final Optional<Car> car = carReadService.findStartable(orderDto.carId(), orderDto.carStatus());
+    public void process(final OrderRequest orderRequest) {
+        final Optional<Car> car = carReadService.findStartable(orderRequest.carId(), orderRequest.carStatus());
         if (car.isPresent()) {
-            startRide(orderDto, car.get());
+            startRide(orderRequest, car.get());
         } else {
-            nextProcessor.process(orderDto);
+            nextProcessor.process(orderRequest);
         }
     }
 
-    private void startRide(final OrderDto orderDto, final Car car) {
-        final User user = userReadService.findVerifiedById(orderDto.userId());
+    private void startRide(final OrderRequest orderRequest, final Car car) {
+        final User user = userReadService.findVerifiedById(orderRequest.userId());
         if (orderReadService.existsByUserAndEndingIsNull(user)) {
             throw new OrderCreationException("Cannot start ride");
         }
-        car.setStatus(orderDto.carStatus());
+        car.setStatus(orderRequest.carStatus());
         final Order order =
                 Order.builder()
                         .user(user)
                         .uuid(UUID.randomUUID().toString())
                         .car(car)
-                        .status(statusConverter.toOrderStatus(orderDto.carStatus()))
+                        .status(statusConverter.toOrderStatus(orderRequest.carStatus()))
                         .build();
         orderWriteService.save(order);
     }

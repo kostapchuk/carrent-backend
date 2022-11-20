@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.processor;
 
 import com.ostapchuk.car.rent.converter.StatusConverter;
-import com.ostapchuk.car.rent.dto.order.OrderDto;
+import com.ostapchuk.car.rent.dto.order.OrderRequest;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.CarStatus;
 import com.ostapchuk.car.rent.entity.Order;
@@ -51,31 +51,31 @@ class StartingRideStatusProcessorTest {
 
     @BeforeAll
     protected static void beforeAll() {
-        defaultOrderDto = new OrderDto(defaultUser.getId(), defaultCar.getId(), CarStatus.IN_BOOKING);
+        defaultOrderRequest = new OrderRequest(defaultUser.getId(), defaultCar.getId(), CarStatus.IN_BOOKING);
     }
 
     /**
-     * {@link StartingRideStatusProcessor#process(OrderDto)}
+     * {@link StartingRideStatusProcessor#process(OrderRequest)}
      */
     @Test
     @DisplayName("Car is free. User is active, verified and balance is positive. Should be able to start a ride")
     void process_WhenCarIsFreeAndUserIsVerified_ShouldStart() {
         // when
-        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.of(defaultCar));
-        when(userReadService.findVerifiedById(defaultOrderDto.userId())).thenReturn(defaultUser);
+        when(userReadService.findVerifiedById(defaultOrderRequest.userId())).thenReturn(defaultUser);
         when(orderReadService.existsByUserAndEndingIsNull(defaultUser)).thenReturn(false);
         when(orderWriteService.save(any(Order.class))).thenReturn(new Order());
 
         // verify
-        startingRideStatusProcessor.process(defaultOrderDto);
+        startingRideStatusProcessor.process(defaultOrderRequest);
         verify(userReadService, times(1)).findVerifiedById(anyLong());
         verify(orderReadService, times(1)).existsByUserAndEndingIsNull(defaultUser);
         verify(orderWriteService, times(1)).save(any(Order.class));
     }
 
     /**
-     * {@link StartingRideStatusProcessor#process(OrderDto)}
+     * {@link StartingRideStatusProcessor#process(OrderRequest)}
      */
     @Test
     @DisplayName("Car isn't free. User is active, verified and balance is positive. Shouldn't be able to start a ride")
@@ -84,38 +84,38 @@ class StartingRideStatusProcessorTest {
         defaultCar.setStatus(CarStatus.IN_RENT);
 
         // when
-        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.empty());
 
         // verify
-        startingRideStatusProcessor.process(defaultOrderDto);
-        verify(updatingRideStatusProcessor, times(1)).process(defaultOrderDto);
+        startingRideStatusProcessor.process(defaultOrderRequest);
+        verify(updatingRideStatusProcessor, times(1)).process(defaultOrderRequest);
     }
 
     /**
-     * {@link StartingRideStatusProcessor#process(OrderDto)}
+     * {@link StartingRideStatusProcessor#process(OrderRequest)}
      */
     @Test
     @DisplayName("Car is free. User is active, verified and balance is positive but has an active order. Shouldn't" +
             " be able to start a ride")
     void process_WhenCarIsFreeAndUserIsVerifiedAndHasActiveOrder_ShouldNotStart() {
         // when
-        when(carReadService.findStartable(defaultCar.getId(), defaultOrderDto.carStatus())).thenReturn(
+        when(carReadService.findStartable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.of(defaultCar));
-        when(userReadService.findVerifiedById(defaultOrderDto.userId())).thenReturn(defaultUser);
+        when(userReadService.findVerifiedById(defaultOrderRequest.userId())).thenReturn(defaultUser);
         when(orderReadService.existsByUserAndEndingIsNull(defaultUser)).thenReturn(true);
 
         // verify
         final OrderCreationException thrown = assertThrows(
                 OrderCreationException.class,
-                () -> startingRideStatusProcessor.process(defaultOrderDto),
+                () -> startingRideStatusProcessor.process(defaultOrderRequest),
                 "Cannot start ride"
         );
         assertEquals("Cannot start ride", thrown.getMessage());
-        verify(updatingRideStatusProcessor, never()).process(defaultOrderDto);
+        verify(updatingRideStatusProcessor, never()).process(defaultOrderRequest);
     }
 
-    private static OrderDto defaultOrderDto;
+    private static OrderRequest defaultOrderRequest;
 
     private static final Car defaultCar = Car.builder()
             .id(1)

@@ -1,5 +1,7 @@
 package com.ostapchuk.car.rent.properties;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.validation.annotation.Validated;
@@ -10,12 +12,19 @@ import java.time.Duration;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
 
+@Getter
 @Validated
+@RequiredArgsConstructor
 @ConfigurationProperties(prefix = "jwt")
-public record JwtProperties(
-        @NotBlank String secret,
-        @NotBlank String header,
-        @NotNull @DurationUnit(SECONDS) Duration accessTokenExpiration,
-        @NotNull @DurationUnit(SECONDS) Duration refreshTokenExpiration
-) {
+public class JwtProperties {
+    @NotBlank
+    private final String secret;
+    @NotBlank
+    private final String header;
+    @NotNull
+    @DurationUnit(SECONDS)
+    private final Duration accessTokenExpiration;
+    @NotNull
+    @DurationUnit(SECONDS)
+    private final Duration refreshTokenExpiration;
 }

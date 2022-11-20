@@ -1,6 +1,8 @@
 package com.ostapchuk.car.rent.repository;
 
 import com.ostapchuk.car.rent.entity.User;
+import com.ostapchuk.car.rent.properties.CloudinaryProperties;
+import com.ostapchuk.car.rent.properties.JwtProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -8,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -25,6 +28,12 @@ class UserRepositoryTest {
     private UserRepository userRepository;
     @Autowired
     private TestEntityManager entityManager;
+    @MockBean
+    private CloudinaryProperties cloudinaryProperties;
+    @MockBean
+    private CloudinaryProperties.CloudinaryApiProperties cloudinaryApiProperties;
+    @MockBean
+    private JwtProperties jwtProperties;
 
     @BeforeEach
     protected void beforeEach() {

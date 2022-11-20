@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.controller;
 
-import com.ostapchuk.car.rent.dto.ResultDto;
+import com.ostapchuk.car.rent.dto.GeneralResponse;
 import com.ostapchuk.car.rent.dto.user.RegisterUserDto;
 import com.ostapchuk.car.rent.service.UserWriteService;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class UserWriteController {
     private final UserWriteService userWriteService;
 
     @PostMapping("/api/v1/users")
-    public ResultDto register(@RequestBody final RegisterUserDto userDto) {
+    public GeneralResponse register(@RequestBody final RegisterUserDto userDto) {
         return userWriteService.create(userDto);
     }
 
@@ -42,16 +42,16 @@ public class UserWriteController {
     // TODO: 20.11.2022 use Enum type in request
     @PatchMapping(path = "/api/v1/users/{id}/passport", consumes = "multipart/form-data")
     @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
-    public CompletableFuture<ResultDto> uploadPassport(@RequestPart("file") final MultipartFile file,
-                                                       @PathVariable("id") final Long userId) {
+    public CompletableFuture<GeneralResponse> uploadPassport(@RequestPart("file") final MultipartFile file,
+                                                             @PathVariable("id") final Long userId) {
         return userWriteService.updatePassportDocument(file, userId);
     }
 
     // TODO: 20.11.2022 use Enum type in request
     @PatchMapping(path = "/api/v1/users/{id}/driving_license", consumes = "multipart/form-data")
     @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
-    public CompletableFuture<ResultDto> uploadDrivingLicense(@RequestPart("file") final MultipartFile file,
-                                                             @PathVariable("id") final Long userId) {
+    public CompletableFuture<GeneralResponse> uploadDrivingLicense(@RequestPart("file") final MultipartFile file,
+                                                                   @PathVariable("id") final Long userId) {
         return userWriteService.updateDrivingLicenseDocument(file, userId);
     }
 }

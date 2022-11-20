@@ -29,6 +29,9 @@ public class CorsFilterConfig {
     @Value("${frontend.url}")
     private final String frontendUrl;
 
+    @Value("${paypal.url}")
+    private final String paypalUrl;
+
     @Bean
     public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
         final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -41,7 +44,7 @@ public class CorsFilterConfig {
     private CorsConfiguration createConfig() {
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(TRUE);
-        config.setAllowedOrigins(List.of("https://www.sandbox.paypal.com", frontendUrl)); // TODO: 10.11.2022  
+        config.setAllowedOrigins(List.of(paypalUrl, frontendUrl));
         config.setAllowedMethods(List.of(OPTIONS.name(), GET.name(), POST.name(), PATCH.name(), DELETE.name()));
         config.setAllowedHeaders(SINGLETON_STAR); // TODO: 04.11.2022  
         return config;

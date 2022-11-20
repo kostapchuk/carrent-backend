@@ -1,7 +1,7 @@
 package com.ostapchuk.car.rent.processor;
 
 import com.ostapchuk.car.rent.converter.StatusConverter;
-import com.ostapchuk.car.rent.dto.order.OrderDto;
+import com.ostapchuk.car.rent.dto.order.OrderRequest;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.User;
@@ -42,24 +42,24 @@ class UpdatingRideStatusProcessor extends RideStatusProcessor {
     }
 
     @Override
-    public void process(final OrderDto orderDto) {
-        final Optional<Car> car = carReadService.findUpdatable(orderDto.carId(), orderDto.carStatus());
+    public void process(final OrderRequest orderRequest) {
+        final Optional<Car> car = carReadService.findUpdatable(orderRequest.carId(), orderRequest.carStatus());
         if (car.isPresent()) {
-            updateRide(orderDto, car.get());
+            updateRide(orderRequest, car.get());
         } else {
-            nextProcessor.process(orderDto);
+            nextProcessor.process(orderRequest);
         }
     }
 
-    private void updateRide(final OrderDto orderDto, final Car car) {
-        final User user = userReadService.findVerifiedById(orderDto.userId());
+    private void updateRide(final OrderRequest orderRequest, final Car car) {
+        final User user = userReadService.findVerifiedById(orderRequest.userId());
         final Order order = orderReadService.findExistingByUserAndCar(user, car);
         order.setEnding(LocalDateTime.now());
         order.setPrice(priceService.calculatePrice(order, car));
         orderWriteService.save(order);
-        car.setStatus(orderDto.carStatus());
+        car.setStatus(orderRequest.carStatus());
         final Order newOrder = Order.builder().user(user).uuid(order.getUuid()).start(LocalDateTime.now()).car(car)
-                .status(statusConverter.toOrderStatus(orderDto.carStatus())).build();
+                .status(statusConverter.toOrderStatus(orderRequest.carStatus())).build();
         orderWriteService.save(newOrder);
     }
 }

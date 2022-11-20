@@ -1,6 +1,6 @@
 package com.ostapchuk.car.rent.processor;
 
-import com.ostapchuk.car.rent.dto.order.OrderDto;
+import com.ostapchuk.car.rent.dto.order.OrderRequest;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.User;
@@ -39,22 +39,22 @@ class FinishingRideStatusProcessor extends RideStatusProcessor {
     }
 
     @Override
-    public void process(final OrderDto orderDto) {
-        final Optional<Car> car = carReadService.findFinishable(orderDto.carId(), orderDto.carStatus());
+    public void process(final OrderRequest orderRequest) {
+        final Optional<Car> car = carReadService.findFinishable(orderRequest.carId(), orderRequest.carStatus());
         if (car.isPresent()) {
-            finishRide(orderDto, car.get());
+            finishRide(orderRequest, car.get());
         } else {
             throw new CarUnavailableException("Sorry, car is not available");
         }
     }
 
-    private void finishRide(final OrderDto orderDto, final Car car) {
-        final User user = userReadService.findVerifiedById(orderDto.userId());
+    private void finishRide(final OrderRequest orderRequest, final Car car) {
+        final User user = userReadService.findVerifiedById(orderRequest.userId());
         final Order order = orderReadService.findExistingByUserAndCar(user, car);
         order.setEnding(LocalDateTime.now());
         user.setBalance(user.getBalance().subtract(priceService.calculateRidePrice(order, car)));
         order.setPrice(priceService.calculatePrice(order, car));
-        car.setStatus(orderDto.carStatus());
+        car.setStatus(orderRequest.carStatus());
         orderWriteService.save(order);
     }
 }

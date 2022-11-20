@@ -19,9 +19,9 @@ public class CloudinaryConfig {
     @PostConstruct
     protected void init() {
         config = Map.of(
-                "cloud_name", cloudinaryProperties.cloudName(),
-                "api_key", cloudinaryProperties.api().key(),
-                "api_secret", cloudinaryProperties.api().secret()
+                "cloud_name", cloudinaryProperties.getCloudName(),
+                "api_key", cloudinaryProperties.getApi().getKey(),
+                "api_secret", cloudinaryProperties.getApi().getSecret()
         );
     }
 
