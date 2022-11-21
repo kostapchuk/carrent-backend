@@ -60,4 +60,8 @@ public class UserWriteService {
                     return new GeneralResponse("Successfully uploaded the file", TRUE);
                 });
     }
+
+    public void save(final User user) {
+        userRepository.save(user);
+    }
 }

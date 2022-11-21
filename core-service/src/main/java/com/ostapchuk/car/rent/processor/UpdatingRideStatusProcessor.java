@@ -10,7 +10,8 @@ import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
 import com.ostapchuk.car.rent.service.PriceService;
 import com.ostapchuk.car.rent.service.UserReadService;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -23,7 +24,7 @@ import java.util.Optional;
  * <br/>3. {@link com.ostapchuk.car.rent.entity.CarStatus#IN_RENT_PAUSED} ->
  * {@link com.ostapchuk.car.rent.entity.CarStatus#IN_RENT}
  */
-@Component
+@Service
 class UpdatingRideStatusProcessor extends RideStatusProcessor {
 
     private final StatusConverter statusConverter;
@@ -42,6 +43,7 @@ class UpdatingRideStatusProcessor extends RideStatusProcessor {
     }
 
     @Override
+    @Transactional
     public void process(final OrderRequest orderRequest) {
         final Optional<Car> car = carReadService.findUpdatable(orderRequest.carId(), orderRequest.carStatus());
         if (car.isPresent()) {
@@ -53,12 +55,8 @@ class UpdatingRideStatusProcessor extends RideStatusProcessor {
 
     private void updateRide(final OrderRequest orderRequest, final Car car) {
         final User user = userReadService.findVerifiedById(orderRequest.userId());
-        final Order order = orderReadService.findExistingByUserAndCar(user, car);
-        order.setEnding(LocalDateTime.now());
-        order.setPrice(priceService.calculatePrice(order, car));
-        orderWriteService.save(order);
-        car.setStatus(orderRequest.carStatus());
-        final Order newOrder = Order.builder().user(user).uuid(order.getUuid()).start(LocalDateTime.now()).car(car)
+        final String uuid = orderWriteService.finishOrder(orderRequest, car, user);
+        final Order newOrder = Order.builder().user(user).uuid(uuid).start(LocalDateTime.now()).car(car)
                 .status(statusConverter.toOrderStatus(orderRequest.carStatus())).build();
         orderWriteService.save(newOrder);
     }

@@ -11,6 +11,7 @@ import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
 import com.ostapchuk.car.rent.service.PriceService;
 import com.ostapchuk.car.rent.service.UserReadService;
+import com.ostapchuk.car.rent.service.UserWriteService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.UUID;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -48,6 +50,8 @@ class UpdatingRideStatusProcessorTest {
     private UserReadService userReadService;
     @MockBean
     private PriceService priceService;
+    @MockBean
+    private UserWriteService userWriteService;
 
     @BeforeAll
     protected static void beforeAll() {
@@ -67,13 +71,14 @@ class UpdatingRideStatusProcessorTest {
         when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(Optional.of(
                 defaultCar));
         when(userReadService.findVerifiedById(defaultOrderRequest.userId())).thenReturn(defaultUser);
-        when(orderReadService.findExistingByUserAndCar(defaultUser, defaultCar)).thenReturn(new Order());
+        when(orderWriteService.finishOrder(defaultOrderRequest, defaultCar, defaultUser)).thenReturn(
+                UUID.randomUUID().toString());
         when(orderWriteService.save(any(Order.class))).thenReturn(new Order());
 
         // verify
         startingRideStatusProcessor.process(defaultOrderRequest);
         verify(userReadService, times(1)).findVerifiedById(anyLong());
-        verify(orderWriteService, times(2)).save(any(Order.class));
+        verify(orderWriteService, times(1)).save(any(Order.class));
     }
 
     private static OrderRequest defaultOrderRequest;

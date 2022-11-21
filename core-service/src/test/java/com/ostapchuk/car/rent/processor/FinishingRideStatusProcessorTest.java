@@ -12,6 +12,7 @@ import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
 import com.ostapchuk.car.rent.service.PriceService;
 import com.ostapchuk.car.rent.service.UserReadService;
+import com.ostapchuk.car.rent.service.UserWriteService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,8 @@ class FinishingRideStatusProcessorTest {
     @MockBean
     private OrderWriteService orderWriteService;
     @MockBean
+    private UserWriteService userWriteService;
+    @MockBean
     private UserReadService userReadService;
     @MockBean
     private PriceService priceService;
@@ -74,8 +77,8 @@ class FinishingRideStatusProcessorTest {
         when(carReadService.findFinishable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(Optional.of(
                 defaultCar));
         when(userReadService.findVerifiedById(defaultUser.getId())).thenReturn(defaultUser);
-        when(orderReadService.findExistingByUserAndCar(defaultUser, defaultCar)).thenReturn(order);
-        when(priceService.calculateRidePrice(order, defaultCar)).thenReturn(new BigDecimal("10"));
+        when(orderWriteService.finishOrder(defaultOrderRequest, defaultCar, defaultUser)).thenReturn(order.getUuid());
+        when(priceService.calculateRidePrice(order.getUuid())).thenReturn(new BigDecimal("10"));
 
         // verify
         startingRideStatusProcessor.process(defaultOrderRequest);

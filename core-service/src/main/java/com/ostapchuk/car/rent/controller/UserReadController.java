@@ -4,7 +4,7 @@ import com.ostapchuk.car.rent.dto.ride.RideResponse;
 import com.ostapchuk.car.rent.dto.user.UserDto;
 import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.UserStatus;
-import com.ostapchuk.car.rent.service.RideService;
+import com.ostapchuk.car.rent.service.RideReadService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,13 +20,13 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserReadController {
 
-    private final RideService rideService;
+    private final RideReadService rideReadService;
     private final UserReadService userReadService;
 
     @GetMapping("/api/v1/users/{id}/rides")
     @PreAuthorize("hasAuthority(T(com.ostapchuk.car.rent.entity.Permission).USERS_READ.getName())")
     public List<RideResponse> findAllRidesById(@PathVariable final Long id) {
-        return rideService.findAllRidesByUserId(id);
+        return rideReadService.findAllRidesByUserId(id);
     }
 
     @GetMapping("/api/v1/users/{id}/balance")

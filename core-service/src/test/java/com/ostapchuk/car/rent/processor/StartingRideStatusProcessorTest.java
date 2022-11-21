@@ -6,7 +6,7 @@ import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.CarStatus;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.User;
-import com.ostapchuk.car.rent.exception.OrderCreationException;
+import com.ostapchuk.car.rent.exception.OrderException;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
@@ -106,10 +106,9 @@ class StartingRideStatusProcessorTest {
         when(orderReadService.existsByUserAndEndingIsNull(defaultUser)).thenReturn(true);
 
         // verify
-        final OrderCreationException thrown = assertThrows(
-                OrderCreationException.class,
-                () -> startingRideStatusProcessor.process(defaultOrderRequest),
-                "Cannot start ride"
+        final OrderException thrown = assertThrows(
+                OrderException.class,
+                () -> startingRideStatusProcessor.process(defaultOrderRequest)
         );
         assertEquals("Cannot start ride", thrown.getMessage());
         verify(updatingRideStatusProcessor, never()).process(defaultOrderRequest);
