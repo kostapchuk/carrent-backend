@@ -6,6 +6,7 @@ import com.ostapchuk.car.rent.entity.OrderStatus;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.mapper.OrderMapper;
 import com.ostapchuk.car.rent.repository.OrderRepository;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -106,7 +107,24 @@ class RideReadServiceTest {
 
 
     @Test
+    @Disabled
     void findAllRidesByUserId() {
+
+        // when
+        when(userReadService.findById(defaultUser.getId())).thenReturn(defaultUser);
+        when(orderRepository.findAllByUserAndEndingIsNotNullOrderByStartAsc(defaultUser))
+                .thenReturn(List.of(order1, order2, order3, order4));
+
+        // verify
+//        List<RideResponse> rideResponses = List.of(new RideResponse(, car.getMark(), car.getModel(), new BigDecimal(
+//                "190"), 4740, ));
+        var actual = rideReadService.findAllRidesByUserId(defaultUser.getId());
+        System.out.println(actual);
+    }
+
+    @Disabled
+    @Test
+    void findAllRidesByUserId_ThrowsException() {
 
         // when
         when(userReadService.findById(defaultUser.getId())).thenReturn(defaultUser);
