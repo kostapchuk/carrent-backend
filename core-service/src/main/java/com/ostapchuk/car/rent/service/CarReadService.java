@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static com.ostapchuk.car.rent.entity.CarStatus.FREE;
 import static com.ostapchuk.car.rent.entity.CarStatus.IN_BOOKING;
@@ -46,26 +47,29 @@ public class CarReadService {
     }
 
     public Optional<Car> findStartable(final Integer carId, final CarStatus carStatus) {
-        return carRepository.findById(carId)
-                .filter(car -> FREE.equals(car.getStatus()) &&
-                        (IN_BOOKING.equals(carStatus) || IN_RENT.equals(carStatus))
-                );
+        if (IN_BOOKING.equals(carStatus) || IN_RENT.equals(carStatus)) {
+            return carRepository.findByIdAndStatus(carId, FREE);
+        } else {
+            return Optional.empty();
+        }
     }
 
     public Optional<Car> findUpdatable(final Integer carId, final CarStatus carStatus) {
-        return carRepository.findById(carId)
-                .filter(car -> (IN_BOOKING.equals(car.getStatus()) && IN_RENT.equals(carStatus)) || (IN_RENT.equals(
-                        car.getStatus()) && IN_RENT_PAUSED.equals(carStatus)) || (IN_RENT_PAUSED.equals(
-                        car.getStatus()) && IN_RENT.equals(carStatus))
-                );
+        if (IN_RENT_PAUSED.equals(carStatus)) {
+            return carRepository.findByIdAndStatus(carId, IN_RENT);
+        } else if (IN_RENT.equals(carStatus)) {
+            return carRepository.findByIdAndStatusIn(carId, Set.of(IN_BOOKING, IN_RENT_PAUSED));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public Optional<Car> findFinishable(final Integer carId, final CarStatus carStatus) {
-        return carRepository.findById(carId)
-                .filter(car -> FREE.equals(carStatus) &&
-                        (IN_RENT_PAUSED.equals(car.getStatus()) || IN_RENT.equals(car.getStatus()) ||
-                                IN_BOOKING.equals(car.getStatus()))
-                );
+        if (FREE.equals(carStatus)) {
+            return carRepository.findByIdAndStatusIn(carId, Set.of(IN_BOOKING, IN_RENT_PAUSED, IN_RENT));
+        } else {
+            return Optional.empty();
+        }
     }
 
     public List<CarResponse> findAllFreeForUser(final Long userId) {
