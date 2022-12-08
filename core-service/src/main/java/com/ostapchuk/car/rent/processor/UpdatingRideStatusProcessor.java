@@ -8,7 +8,6 @@ import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
-import com.ostapchuk.car.rent.service.PriceService;
 import com.ostapchuk.car.rent.service.UserReadService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,18 +27,15 @@ import java.util.Optional;
 class UpdatingRideStatusProcessor extends RideStatusProcessor {
 
     private final StatusConverter statusConverter;
-    private final PriceService priceService;
 
     public UpdatingRideStatusProcessor(final OrderReadService orderReadService,
                                        final OrderWriteService orderWriteService,
                                        final CarReadService carReadService,
                                        final UserReadService userReadService,
                                        final StatusConverter statusConverter,
-                                       final PriceService priceService,
                                        final FinishingRideStatusProcessor finishingRideStatusProcessor) {
         super(orderReadService, carReadService, userReadService, orderWriteService, finishingRideStatusProcessor);
         this.statusConverter = statusConverter;
-        this.priceService = priceService;
     }
 
     @Override
@@ -56,8 +52,13 @@ class UpdatingRideStatusProcessor extends RideStatusProcessor {
     private void updateRide(final OrderRequest orderRequest, final Car car) {
         final User user = userReadService.findVerifiedById(orderRequest.userId());
         final String uuid = orderWriteService.finishOrder(orderRequest, car, user);
-        final Order newOrder = Order.builder().user(user).uuid(uuid).start(LocalDateTime.now()).car(car)
-                .status(statusConverter.toOrderStatus(orderRequest.carStatus())).build();
+        final Order newOrder = Order.builder()
+                .user(user)
+                .uuid(uuid)
+                .start(LocalDateTime.now())
+                .car(car)
+                .status(statusConverter.toOrderStatus(orderRequest.carStatus()))
+                .build();
         orderWriteService.save(newOrder);
     }
 }
