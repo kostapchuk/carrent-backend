@@ -49,19 +49,21 @@ public class UserWriteService {
         return updateDocument(file, url -> userRepository.updatePassportUrl(userId, url));
     }
 
-    public CompletableFuture<GeneralResponse> updateDrivingLicenseDocument(final MultipartFile file, final Long userId) {
+    public CompletableFuture<GeneralResponse> updateDrivingLicenseDocument(final MultipartFile file,
+                                                                           final Long userId) {
         return updateDocument(file, url -> userRepository.updateDrivingLicenseUrl(userId, url));
     }
 
-    private CompletableFuture<GeneralResponse> updateDocument(final MultipartFile file, final Consumer<String> updateImgUrl) {
+    public void save(final User user) {
+        userRepository.save(user);
+    }
+
+    private CompletableFuture<GeneralResponse> updateDocument(final MultipartFile file,
+                                                              final Consumer<String> updateImgUrl) {
         return fileService.upload(file)
                 .thenApply(url -> {
                     url.ifPresent(updateImgUrl);
                     return new GeneralResponse("Successfully uploaded the file", TRUE);
                 });
-    }
-
-    public void save(final User user) {
-        userRepository.save(user);
     }
 }

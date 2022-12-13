@@ -54,7 +54,7 @@ class UpdatingRideStatusProcessor extends RideStatusProcessor {
     }
 
     private void updateRide(final OrderRequest orderRequest, final Car car) {
-        final User user = userReadService.findVerifiedById(orderRequest.userId());
+        final User user = userReadService.findById(orderRequest.userId());
         final String uuid = orderWriteService.finishOrder(orderRequest, car, user);
         final Order newOrder = Order.builder().user(user).uuid(uuid).start(LocalDateTime.now()).car(car)
                 .status(statusConverter.toOrderStatus(orderRequest.carStatus())).build();

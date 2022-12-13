@@ -63,13 +63,13 @@ class StartingRideStatusProcessorTest {
         // when
         when(carReadService.findStartable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.of(defaultCar));
-        when(userReadService.findVerifiedById(defaultOrderRequest.userId())).thenReturn(defaultUser);
+        when(userReadService.findById(defaultOrderRequest.userId())).thenReturn(defaultUser);
         when(orderReadService.existsByUserAndEndingIsNull(defaultUser)).thenReturn(false);
         when(orderWriteService.save(any(Order.class))).thenReturn(new Order());
 
         // verify
         startingRideStatusProcessor.process(defaultOrderRequest);
-        verify(userReadService, times(1)).findVerifiedById(anyLong());
+        verify(userReadService, times(1)).findById(anyLong());
         verify(orderReadService, times(1)).existsByUserAndEndingIsNull(defaultUser);
         verify(orderWriteService, times(1)).save(any(Order.class));
     }
@@ -102,7 +102,7 @@ class StartingRideStatusProcessorTest {
         // when
         when(carReadService.findStartable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.of(defaultCar));
-        when(userReadService.findVerifiedById(defaultOrderRequest.userId())).thenReturn(defaultUser);
+        when(userReadService.findById(defaultOrderRequest.userId())).thenReturn(defaultUser);
         when(orderReadService.existsByUserAndEndingIsNull(defaultUser)).thenReturn(true);
 
         // verify

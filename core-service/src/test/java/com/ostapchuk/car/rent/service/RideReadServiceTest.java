@@ -1,11 +1,14 @@
 package com.ostapchuk.car.rent.service;
 
+import com.ostapchuk.car.rent.dto.ride.RideDetailsResponse;
+import com.ostapchuk.car.rent.dto.ride.RideResponse;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.OrderStatus;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.mapper.OrderMapper;
 import com.ostapchuk.car.rent.repository.OrderRepository;
+import com.ostapchuk.car.rent.util.DateTimeUtil;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +16,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import static com.ostapchuk.car.rent.entity.CarStatus.FREE;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.mockito.Mockito.when;
 
 @SpringJUnitConfig(classes = {RideReadService.class, OrderMapper.class, PriceService.class})
@@ -104,22 +109,28 @@ class RideReadServiceTest {
             .status(OrderStatus.RENT)
             .build();
 
-
-
     @Test
-    @Disabled
     void findAllRidesByUserId() {
+        // given
+        final List<Order> orders = List.of(order1, order2, order3, order4);
 
         // when
         when(userReadService.findById(defaultUser.getId())).thenReturn(defaultUser);
         when(orderRepository.findAllByUserAndEndingIsNotNullOrderByStartAsc(defaultUser))
-                .thenReturn(List.of(order1, order2, order3, order4));
+                .thenReturn(orders);
 
         // verify
-//        List<RideResponse> rideResponses = List.of(new RideResponse(, car.getMark(), car.getModel(), new BigDecimal(
-//                "190"), 4740, ));
-        var actual = rideReadService.findAllRidesByUserId(defaultUser.getId());
-        System.out.println(actual);
+//        final var actual = rideReadService.findAllRidesByUserId(defaultUser.getId());
+        new RideResponse(
+                LocalDate.now(),
+                car2.getMark(),
+                car2.getModel(),
+                order3.getPrice().add(order4.getPrice()),
+                DateTimeUtil.retrieveDurationInMinutes(order3.getStart(), order3.getEnding()) +
+                        DateTimeUtil.retrieveDurationInMinutes(order4.getStart(), order4.getEnding()),
+                List.of(new RideDetailsResponse())
+        );
+//        assertIterableEquals(, actual);
     }
 
     @Disabled
@@ -138,4 +149,7 @@ class RideReadServiceTest {
         System.out.println(actual);
     }
 
+//    @Test
+//    void testFindAllRidesByUserId() {
+//    }
 }

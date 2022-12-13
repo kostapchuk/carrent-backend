@@ -76,13 +76,13 @@ class FinishingRideStatusProcessorTest {
                 Optional.empty());
         when(carReadService.findFinishable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(Optional.of(
                 defaultCar));
-        when(userReadService.findVerifiedById(defaultUser.getId())).thenReturn(defaultUser);
+        when(userReadService.findById(defaultUser.getId())).thenReturn(defaultUser);
         when(orderWriteService.finishOrder(defaultOrderRequest, defaultCar, defaultUser)).thenReturn(order.getUuid());
         when(priceService.calculateRidePrice(order.getUuid())).thenReturn(new BigDecimal("10"));
 
         // verify
         startingRideStatusProcessor.process(defaultOrderRequest);
-        verify(userReadService, times(1)).findVerifiedById(defaultUser.getId());
+        verify(userReadService, times(1)).findById(defaultUser.getId());
     }
 
     /**
@@ -106,7 +106,7 @@ class FinishingRideStatusProcessorTest {
                 () -> startingRideStatusProcessor.process(defaultOrderRequest)
         );
         assertEquals("Sorry, car is not available", thrown.getMessage());
-        verify(userReadService, never()).findVerifiedById(defaultUser.getId());
+        verify(userReadService, never()).findById(defaultUser.getId());
     }
 
     private static OrderRequest defaultOrderRequest;

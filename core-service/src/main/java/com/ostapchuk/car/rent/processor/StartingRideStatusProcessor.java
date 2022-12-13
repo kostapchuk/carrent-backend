@@ -49,7 +49,7 @@ public class StartingRideStatusProcessor extends RideStatusProcessor {
     }
 
     private void startRide(final OrderRequest orderRequest, final Car car) {
-        final User user = userReadService.findVerifiedById(orderRequest.userId());
+        final User user = userReadService.findById(orderRequest.userId());
         if (orderReadService.existsByUserAndEndingIsNull(user)) {
             throw new OrderException("Cannot start ride");
         }

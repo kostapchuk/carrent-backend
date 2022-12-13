@@ -9,7 +9,7 @@ public record RideResponse(
         String mark,
         String model,
         BigDecimal totalPrice,
-        int totalTimeHours,
+        int totalTime,
         List<RideDetailsResponse> rideDetailsResponses
 ) {
 }

@@ -53,7 +53,7 @@ class FinishingRideStatusProcessor extends RideStatusProcessor {
     }
 
     private void finishRide(final OrderRequest orderRequest, final Car car) {
-        final User user = userReadService.findVerifiedById(orderRequest.userId());
+        final User user = userReadService.findById(orderRequest.userId());
         final String uuid = orderWriteService.finishOrder(orderRequest, car, user);
         user.setBalance(user.getBalance().subtract(priceService.calculateRidePrice(uuid)));
         userWriteService.save(user);

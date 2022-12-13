@@ -70,14 +70,14 @@ class UpdatingRideStatusProcessorTest {
                 Optional.empty());
         when(carReadService.findUpdatable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(Optional.of(
                 defaultCar));
-        when(userReadService.findVerifiedById(defaultOrderRequest.userId())).thenReturn(defaultUser);
+        when(userReadService.findById(defaultOrderRequest.userId())).thenReturn(defaultUser);
         when(orderWriteService.finishOrder(defaultOrderRequest, defaultCar, defaultUser)).thenReturn(
                 UUID.randomUUID().toString());
         when(orderWriteService.save(any(Order.class))).thenReturn(new Order());
 
         // verify
         startingRideStatusProcessor.process(defaultOrderRequest);
-        verify(userReadService, times(1)).findVerifiedById(anyLong());
+        verify(userReadService, times(1)).findById(anyLong());
         verify(orderWriteService, times(1)).save(any(Order.class));
     }
 
