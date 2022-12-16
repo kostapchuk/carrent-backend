@@ -4,7 +4,6 @@ import com.ostapchuk.car.rent.converter.StatusConverter;
 import com.ostapchuk.car.rent.dto.order.OrderRequest;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
-import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.exception.OrderException;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
@@ -49,18 +48,19 @@ public class StartingRideStatusProcessor extends RideStatusProcessor {
     }
 
     private void startRide(final OrderRequest orderRequest, final Car car) {
-        final User user = userReadService.findById(orderRequest.userId());
-        if (orderReadService.existsByUserAndEndingIsNull(user)) {
-            throw new OrderException("Cannot start ride");
-        }
-        car.setStatus(orderRequest.carStatus());
-        final Order order =
-                Order.builder()
-                        .user(user)
-                        .uuid(UUID.randomUUID().toString())
-                        .car(car)
-                        .status(statusConverter.toOrderStatus(orderRequest.carStatus()))
-                        .build();
-        orderWriteService.save(order);
+        userReadService.findAllowedToStartRideById(orderRequest.userId()).ifPresent(user -> {
+            if (orderReadService.existsByUserAndEndingIsNull(user)) {
+                throw new OrderException("Cannot start ride");
+            }
+            car.setStatus(orderRequest.carStatus());
+            final Order order =
+                    Order.builder()
+                            .user(user)
+                            .uuid(UUID.randomUUID().toString())
+                            .car(car)
+                            .status(statusConverter.toOrderStatus(orderRequest.carStatus()))
+                            .build();
+            orderWriteService.save(order);
+        });
     }
 }

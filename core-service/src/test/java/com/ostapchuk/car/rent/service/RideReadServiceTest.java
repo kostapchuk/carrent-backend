@@ -1,14 +1,11 @@
 package com.ostapchuk.car.rent.service;
 
-import com.ostapchuk.car.rent.dto.ride.RideDetailsResponse;
-import com.ostapchuk.car.rent.dto.ride.RideResponse;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.OrderStatus;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.mapper.OrderMapper;
 import com.ostapchuk.car.rent.repository.OrderRepository;
-import com.ostapchuk.car.rent.util.DateTimeUtil;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +13,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 import static com.ostapchuk.car.rent.entity.CarStatus.FREE;
-import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.mockito.Mockito.when;
 
 @SpringJUnitConfig(classes = {RideReadService.class, OrderMapper.class, PriceService.class})
@@ -121,15 +116,15 @@ class RideReadServiceTest {
 
         // verify
 //        final var actual = rideReadService.findAllRidesByUserId(defaultUser.getId());
-        new RideResponse(
-                LocalDate.now(),
-                car2.getMark(),
-                car2.getModel(),
-                order3.getPrice().add(order4.getPrice()),
-                DateTimeUtil.retrieveDurationInMinutes(order3.getStart(), order3.getEnding()) +
-                        DateTimeUtil.retrieveDurationInMinutes(order4.getStart(), order4.getEnding()),
-                List.of(new RideDetailsResponse())
-        );
+//        new RideResponse(
+//                LocalDate.now(),
+//                car2.getMark(),
+//                car2.getModel(),
+//                order3.getPrice().add(order4.getPrice()),
+//                DateTimeUtil.retrieveDurationInMinutes(order3.getStart(), order3.getEnding()) +
+//                        DateTimeUtil.retrieveDurationInMinutes(order4.getStart(), order4.getEnding()),
+//                List.of(new RideDetailsResponse())
+//        );
 //        assertIterableEquals(, actual);
     }
 

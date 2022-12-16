@@ -9,12 +9,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
+import static java.math.BigDecimal.ZERO;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
+/**
+ * Tests for {@link UserReadService}
+ */
 @SpringJUnitConfig(classes = {UserReadService.class, UserMapper.class})
 class UserReadServiceTest {
 
@@ -94,7 +100,7 @@ class UserReadServiceTest {
         // when
         when(userRepository.findById(defaultUser.getId())).thenReturn(Optional.of(defaultUser));
 
-        // verify+
+        // verify
         assertEquals(userMapper.toDto(defaultUser), userReadService.findDtoById(defaultUser.getId()));
 
     }
@@ -106,5 +112,41 @@ class UserReadServiceTest {
 
         // verify
         assertEquals(userMapper.toDto(defaultUser), userReadService.findDtoByEmail(defaultUser.getEmail()));
+    }
+
+
+    /**
+     * {@link UserReadService#findAllowedToStartRideById(Long)}
+     */
+    @Test
+    void findAllowedToStartRideById_WhenBalancePositive() {
+        // given
+        final User expected = defaultUser;
+        expected.setBalance(new BigDecimal("5.00"));
+
+        // when
+        when(userRepository.findById(defaultUser.getId())).thenReturn(Optional.of(expected));
+
+        // verify
+        final Optional<User> actual = userReadService.findAllowedToStartRideById(defaultUser.getId());
+        assertTrue(actual.isPresent());
+        assertTrue(actual.get().getBalance().compareTo(ZERO) >= 0);
+    }
+
+    /**
+     * {@link UserReadService#findAllowedToStartRideById(Long)}
+     */
+    @Test
+    void findAllowedToStartRideById_WhenBalanceNegative_ShouldNotFind() {
+        // given
+        final User expected = defaultUser;
+        expected.setBalance(new BigDecimal("-5.00"));
+
+        // when
+        when(userRepository.findById(defaultUser.getId())).thenReturn(Optional.of(expected));
+
+        // verify
+        final Optional<User> actual = userReadService.findAllowedToStartRideById(defaultUser.getId());
+        assertEquals(Optional.empty(), actual);
     }
 }

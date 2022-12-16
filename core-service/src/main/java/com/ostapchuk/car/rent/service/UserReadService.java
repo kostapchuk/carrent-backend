@@ -9,7 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,5 +44,15 @@ public class UserReadService {
 
     public UserDto findDtoByEmail(final String email) {
         return userMapper.toDto(findByEmail(email));
+    }
+
+    /**
+     * The user is allowed to start if he is verified and balance not negative
+     *
+     * @param userId
+     * @return
+     */
+    public Optional<User> findAllowedToStartRideById(final Long userId) {
+        return Optional.of(findById(userId)).filter(user -> user.getBalance().compareTo(BigDecimal.ZERO) >= 0);
     }
 }
