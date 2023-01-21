@@ -135,13 +135,16 @@ class PriceServiceTest {
 
     @Test
     void calculateRidePrice_ShouldThrow() {
+        // given
+        final String orderUuid = order1.getUuid();
+
         // when
         when(orderRepository.findAllByUuid(order1.getUuid())).thenReturn(List.of(order1, order2, order3));
 
         // verify
         final OrderException thrown = assertThrows(
                 OrderException.class,
-                () -> priceService.calculateRidePrice(order1.getUuid())
+                () -> priceService.calculateRidePrice(orderUuid)
         );
         assertEquals("Can not calculate price for not finished order", thrown.getMessage());
     }
