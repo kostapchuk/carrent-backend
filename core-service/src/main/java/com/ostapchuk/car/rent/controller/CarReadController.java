@@ -8,17 +8,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 public record CarReadController(CarReadService carReadService) {
 
     @GetMapping("/api/v1/cars/free")
-    public List<CarResponse> findAllFree(
-            @RequestParam(value = "userId", required = false) final Optional<Long> userId) {
-        return userId.isPresent()
-                ? carReadService.findAllFreeForUser(userId.get())
-                : carReadService.findAllFree();
+    public List<CarResponse> findAllFree() {
+        return carReadService.findAllFree();
+    }
+
+    @GetMapping("/api/v1/cars/available")
+    public List<CarResponse> findAllAvailableForUser(@RequestParam final Long userId) {
+        return carReadService.findAllFreeForUser(userId);
     }
 
     @GetMapping("/api/v1/cars/{id}")

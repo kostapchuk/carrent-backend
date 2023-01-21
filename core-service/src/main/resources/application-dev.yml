@@ -53,8 +53,8 @@ logging:
 jwt:
   secret: ${JWT_SECRET}
   header: Authorization
-  accessTokenExpiration: 120000
-  refreshTokenExpiration: 86400
+  accessTokenExpiration: 12000000
+  refreshTokenExpiration: 8640000
 
 frontend:
   url: ${FRONTEND_LINK}
