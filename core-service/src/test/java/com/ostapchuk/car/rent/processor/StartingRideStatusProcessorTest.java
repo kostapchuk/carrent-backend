@@ -6,7 +6,7 @@ import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.CarStatus;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.User;
-import com.ostapchuk.car.rent.exception.OrderCreationException;
+import com.ostapchuk.car.rent.exception.OrderException;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
@@ -63,13 +63,13 @@ class StartingRideStatusProcessorTest {
         // when
         when(carReadService.findStartable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.of(defaultCar));
-        when(userReadService.findVerifiedById(defaultOrderRequest.userId())).thenReturn(defaultUser);
+        when(userReadService.findById(defaultOrderRequest.userId())).thenReturn(defaultUser);
         when(orderReadService.existsByUserAndEndingIsNull(defaultUser)).thenReturn(false);
         when(orderWriteService.save(any(Order.class))).thenReturn(new Order());
 
         // verify
         startingRideStatusProcessor.process(defaultOrderRequest);
-        verify(userReadService, times(1)).findVerifiedById(anyLong());
+        verify(userReadService, times(1)).findById(anyLong());
         verify(orderReadService, times(1)).existsByUserAndEndingIsNull(defaultUser);
         verify(orderWriteService, times(1)).save(any(Order.class));
     }
@@ -102,14 +102,13 @@ class StartingRideStatusProcessorTest {
         // when
         when(carReadService.findStartable(defaultCar.getId(), defaultOrderRequest.carStatus())).thenReturn(
                 Optional.of(defaultCar));
-        when(userReadService.findVerifiedById(defaultOrderRequest.userId())).thenReturn(defaultUser);
+        when(userReadService.findById(defaultOrderRequest.userId())).thenReturn(defaultUser);
         when(orderReadService.existsByUserAndEndingIsNull(defaultUser)).thenReturn(true);
 
         // verify
-        final OrderCreationException thrown = assertThrows(
-                OrderCreationException.class,
-                () -> startingRideStatusProcessor.process(defaultOrderRequest),
-                "Cannot start ride"
+        final OrderException thrown = assertThrows(
+                OrderException.class,
+                () -> startingRideStatusProcessor.process(defaultOrderRequest)
         );
         assertEquals("Cannot start ride", thrown.getMessage());
         verify(updatingRideStatusProcessor, never()).process(defaultOrderRequest);

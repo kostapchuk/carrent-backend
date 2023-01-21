@@ -5,12 +5,13 @@ import com.ostapchuk.car.rent.dto.order.OrderRequest;
 import com.ostapchuk.car.rent.entity.Car;
 import com.ostapchuk.car.rent.entity.Order;
 import com.ostapchuk.car.rent.entity.User;
-import com.ostapchuk.car.rent.exception.OrderCreationException;
+import com.ostapchuk.car.rent.exception.OrderException;
 import com.ostapchuk.car.rent.service.CarReadService;
 import com.ostapchuk.car.rent.service.OrderReadService;
 import com.ostapchuk.car.rent.service.OrderWriteService;
 import com.ostapchuk.car.rent.service.UserReadService;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -20,7 +21,7 @@ import java.util.UUID;
  * <br/>1. {@link com.ostapchuk.car.rent.entity.CarStatus#FREE} -> {@link com.ostapchuk.car.rent.entity.CarStatus#IN_RENT}
  * <br/>2. {@link com.ostapchuk.car.rent.entity.CarStatus#FREE} -> {@link com.ostapchuk.car.rent.entity.CarStatus#IN_BOOKING}
  */
-@Component
+@Service
 public class StartingRideStatusProcessor extends RideStatusProcessor {
 
     private final StatusConverter statusConverter;
@@ -37,6 +38,7 @@ public class StartingRideStatusProcessor extends RideStatusProcessor {
     }
 
     @Override
+    @Transactional
     public void process(final OrderRequest orderRequest) {
         final Optional<Car> car = carReadService.findStartable(orderRequest.carId(), orderRequest.carStatus());
         if (car.isPresent()) {
@@ -47,9 +49,9 @@ public class StartingRideStatusProcessor extends RideStatusProcessor {
     }
 
     private void startRide(final OrderRequest orderRequest, final Car car) {
-        final User user = userReadService.findVerifiedById(orderRequest.userId());
+        final User user = userReadService.findById(orderRequest.userId());
         if (orderReadService.existsByUserAndEndingIsNull(user)) {
-            throw new OrderCreationException("Cannot start ride");
+            throw new OrderException("Cannot start ride");
         }
         car.setStatus(orderRequest.carStatus());
         final Order order =
