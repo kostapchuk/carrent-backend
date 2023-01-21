@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @UtilityClass
 public class DateTimeUtil {
 
-    public int retrieveDurationInHours(final LocalDateTime start, final LocalDateTime end) {
+    public int retrieveDurationInMinutes(final LocalDateTime start, final LocalDateTime end) {
         final Duration duration = Duration.between(start, end);
-        return (int) duration.getSeconds();
+        return (int) duration.getSeconds() / 60;
     }
 }
