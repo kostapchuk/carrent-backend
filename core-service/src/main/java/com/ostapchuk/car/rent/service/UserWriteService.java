@@ -1,6 +1,7 @@
 package com.ostapchuk.car.rent.service;
 
 import com.ostapchuk.car.rent.dto.GeneralResponse;
+import com.ostapchuk.car.rent.dto.UpdateUserRequest;
 import com.ostapchuk.car.rent.dto.user.RegisterUserDto;
 import com.ostapchuk.car.rent.entity.User;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
@@ -65,5 +66,16 @@ public class UserWriteService {
                     url.ifPresent(updateImgUrl);
                     return new GeneralResponse("Successfully uploaded the file", TRUE);
                 });
+    }
+
+    public GeneralResponse updateById(final UpdateUserRequest userRequest, final Long userId) {
+        final User user = userRepository.findById(userId).map(u -> {
+            u.setStatus(userRequest.status());
+            u.setRole(userRequest.role());
+            u.setVerified(userRequest.verified());
+            return u;
+        }).orElseThrow(() -> new EntityNotFoundException("No user with such id: " + userId));
+        userRepository.save(user);
+        return new GeneralResponse("Successfully updated the user!", true);
     }
 }

@@ -1,6 +1,7 @@
 package com.ostapchuk.car.rent.controller;
 
 import com.ostapchuk.car.rent.dto.GeneralResponse;
+import com.ostapchuk.car.rent.dto.UpdateUserRequest;
 import com.ostapchuk.car.rent.dto.user.RegisterUserDto;
 import com.ostapchuk.car.rent.service.UserWriteService;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,12 @@ public class UserWriteController {
     @PostMapping("/api/v1/users")
     public GeneralResponse register(@RequestBody final RegisterUserDto userDto) {
         return userWriteService.create(userDto);
+    }
+
+    @PatchMapping("/api/v1/users/{id}")
+    public GeneralResponse update(@RequestBody final UpdateUserRequest userRequest,
+                                  @PathVariable("id") final Long userId) {
+        return userWriteService.updateById(userRequest, userId);
     }
 
     @DeleteMapping("/api/v1/users/{id}")
