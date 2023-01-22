@@ -1,8 +1,11 @@
 package com.ostapchuk.car.rent.service;
 
 import com.ostapchuk.car.rent.dto.GeneralResponse;
+import com.ostapchuk.car.rent.dto.UpdateUserRequest;
 import com.ostapchuk.car.rent.dto.user.RegisterUserDto;
+import com.ostapchuk.car.rent.entity.Role;
 import com.ostapchuk.car.rent.entity.User;
+import com.ostapchuk.car.rent.entity.UserStatus;
 import com.ostapchuk.car.rent.exception.EntityNotFoundException;
 import com.ostapchuk.car.rent.mapper.UserMapper;
 import com.ostapchuk.car.rent.repository.UserRepository;
@@ -16,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
+import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -88,7 +93,6 @@ class UserWriteServiceTest {
         verify(userRepository, times(0)).save(user);
     }
 
-
     @Test
     void payDebt() {
         userRepository.resetBalance(1L);
@@ -113,7 +117,6 @@ class UserWriteServiceTest {
 
         final GeneralResponse expected = new GeneralResponse("Successfully uploaded the file", TRUE);
 
-
         // when
         when(fileService.upload(mockFile)).thenReturn(CompletableFuture.completedFuture(Optional.of("url")));
         doNothing().when(userRepository).updatePassportUrl(1L, "url");
@@ -137,7 +140,6 @@ class UserWriteServiceTest {
 
         final GeneralResponse expected = new GeneralResponse("Successfully uploaded the file", TRUE);
 
-
         // when
         when(fileService.upload(mockFile)).thenReturn(CompletableFuture.completedFuture(Optional.of("url")));
         doNothing().when(userRepository).updatePassportUrl(1L, "url");
@@ -153,5 +155,75 @@ class UserWriteServiceTest {
     void save() {
         userRepository.save(User.builder().build());
         verify(userRepository, times(1)).save(Mockito.any(User.class));
+    }
+
+    @Test
+    void updateByIdWhenUserExistsShouldUpdate() {
+        // given
+        final Long userId = 1L;
+        final UpdateUserRequest updateUserRequest = new UpdateUserRequest(
+                UserStatus.ACTIVE,
+                Role.USER,
+                false
+        );
+        final User beforeUser = new User(
+                userId,
+                "firstName",
+                "lastName",
+                "+375333719302",
+                "someEmail@gam.com",
+                "pwd",
+                Role.ADMIN,
+                UserStatus.ACTIVE,
+                BigDecimal.TEN,
+                true,
+                "",
+                "",
+                Collections.emptyList()
+        );
+        final User afterUser = new User(
+                userId,
+                "firstName",
+                "lastName",
+                "+375333719302",
+                "someEmail@gam.com",
+                "pwd",
+                Role.USER,
+                UserStatus.ACTIVE,
+                BigDecimal.TEN,
+                true,
+                "",
+                "",
+                Collections.emptyList()
+        );
+        final GeneralResponse expected = new GeneralResponse("Successfully updated the user!", TRUE);
+
+        // when
+        when(userRepository.findById(userId)).thenReturn(Optional.of(beforeUser));
+        when(userRepository.save(afterUser)).thenReturn(afterUser);
+
+        // verify
+        assertEquals(expected, userWriteService.updateById(updateUserRequest, userId));
+    }
+
+    @Test
+    void updateByIdWhenUserNotExistShouldThrow() {
+        // given
+        final Long userId = 1L;
+        final UpdateUserRequest updateUserRequest = new UpdateUserRequest(
+                UserStatus.ACTIVE,
+                Role.USER,
+                false
+        );
+
+        // when
+        when(userRepository.findById(userId)).thenReturn(Optional.empty());
+
+        // verify
+        final EntityNotFoundException thrown = assertThrows(
+                EntityNotFoundException.class,
+                () -> userWriteService.updateById(updateUserRequest, userId)
+        );
+        assertEquals("No user with such id: " + userId, thrown.getMessage());
     }
 }
