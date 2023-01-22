@@ -19,6 +19,7 @@ import static org.springframework.http.HttpMethod.GET;
 import static org.springframework.http.HttpMethod.OPTIONS;
 import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
+import static org.springframework.http.HttpMethod.PUT;
 
 @Configuration
 @RequiredArgsConstructor
@@ -42,10 +43,13 @@ public class CorsFilterConfig {
     }
 
     private CorsConfiguration createConfig() {
+        final List<String> allowedMethods = List.of(OPTIONS.name(), GET.name(), POST.name(), PATCH.name(),
+                DELETE.name(), PUT.name());
+        final List<String> allowedOrigins = List.of(paypalUrl, frontendUrl);
         final CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(TRUE);
-        config.setAllowedOrigins(List.of(paypalUrl, frontendUrl));
-        config.setAllowedMethods(List.of(OPTIONS.name(), GET.name(), POST.name(), PATCH.name(), DELETE.name()));
+        config.setAllowedOrigins(allowedOrigins);
+        config.setAllowedMethods(allowedMethods);
         config.setAllowedHeaders(SINGLETON_STAR);
         return config;
     }
